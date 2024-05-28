@@ -1,5 +1,5 @@
 {
-	"name": "blaze",
+	"name": "blazex",
 	"version": "1.0.0",
 	"description": "Ignite your projects with lightning speed! Say goodbye to setup headaches and hello to rapid development.",
 	"main": "app.ts",
@@ -18,7 +18,7 @@
 	"license": "ISC",
 	"repository": {
 		"type": "git",
-		"url": "git+https://github.com/deepakgohil9/blaze.git"
+		"url": "git+https://github.com/deepakgohil9/blazex.git"
 	},
 	"dependencies": {
 		"bcryptjs": "^2.4.3",
