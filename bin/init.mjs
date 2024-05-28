@@ -37,6 +37,7 @@ const downloadProject = async () => {
 const cleanProject = async () => {
 	const spinner = ora('Cleaning files...').start()
 	await rm(path.join(projectDir, '.git'), { recursive: true, force: true })
+	await rm(path.join(projectDir, '.github'), { recursive: true, force: true })
 	await rm(path.join(projectDir, 'bin'), { recursive: true, force: true })
 	await rm(path.join(projectDir, 'LICENSE'), { force: true })
 	await rm(path.join(projectDir, 'README.md'), { force: true })
