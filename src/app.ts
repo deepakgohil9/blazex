@@ -4,6 +4,8 @@ import express, { type Request, type Response } from 'express'
 import dotenv from 'dotenv'
 import helmet from 'helmet'
 import xss from 'xss-shield'
+import cookieParser from 'cookie-parser'
+import cors from 'cors'
 dotenv.config()
 
 import connect from './databases/mongo.database'
@@ -15,7 +17,9 @@ import authRoute from './routes/auth.route'
 const PORT = process.env.PORT ?? 3000
 const app = express()
 
+app.use(cors({ origin: process.env.CORS_ORIGIN ?? '*', credentials: true }))
 app.use(helmet())
+app.use(cookieParser())
 app.use(express.json())
 app.use(xss.xssShield())
 app.use(sanitizer)

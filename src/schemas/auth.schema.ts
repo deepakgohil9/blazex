@@ -1,6 +1,6 @@
 import { object, string, type TypeOf } from 'zod'
 
-export const AuthSchema = object({
+export const authSchema = object({
 	body: object({
 		email: string({
 			required_error: 'Email is required'
@@ -15,4 +15,11 @@ export const AuthSchema = object({
 	params: object({}).strict()
 })
 
-export type AuthSchemaType = TypeOf<typeof AuthSchema>
+export const issueAccessTokenSchema = object({
+	body: object({}).strict(),
+	query: object({}).strict(),
+	params: object({}).strict()
+})
+
+export type AuthSchemaType = TypeOf<typeof authSchema>
+export type IssueAccessTokenSchemaType = TypeOf<typeof issueAccessTokenSchema>
