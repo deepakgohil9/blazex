@@ -1,6 +1,6 @@
 {
 	"name": "blazex",
-	"version": "1.0.3",
+	"version": "1.0.4",
 	"description": "Ignite your projects with lightning speed! Say goodbye to setup headaches and hello to rapid development.",
 	"main": "app.ts",
 	"bin": {
