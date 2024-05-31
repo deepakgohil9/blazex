@@ -15,11 +15,15 @@ export const authSchema = object({
 	params: object({}).strict()
 })
 
-export const issueAccessTokenSchema = object({
+export const googleCallbackSchema = object({
 	body: object({}).strict(),
-	query: object({}).strict(),
+	query: object({
+		code: string({
+			required_error: 'Code is required'
+		})
+	}),
 	params: object({}).strict()
 })
 
 export type AuthSchemaType = TypeOf<typeof authSchema>
-export type IssueAccessTokenSchemaType = TypeOf<typeof issueAccessTokenSchema>
+export type GoogleCallbackSchemaType = TypeOf<typeof googleCallbackSchema>

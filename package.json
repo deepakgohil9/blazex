@@ -1,6 +1,6 @@
 {
 	"name": "blazex",
-	"version": "1.0.5",
+	"version": "1.0.6",
 	"description": "Ignite your projects with lightning speed! Say goodbye to setup headaches and hello to rapid development.",
 	"main": "app.ts",
 	"bin": {
@@ -27,6 +27,7 @@
 		"dotenv": "^16.4.5",
 		"express": "^4.19.2",
 		"express-mongo-sanitize": "^2.2.0",
+		"google-auth-library": "^9.10.0",
 		"helmet": "^7.1.0",
 		"jsonwebtoken": "^9.0.2",
 		"mongoose": "^8.4.0",

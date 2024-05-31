@@ -4,8 +4,10 @@ import { HttpException, httpErrors } from '../utils/HttpException'
 import ApiResponse from '../utils/ApiResponse'
 import asyncHandler, { type Req } from '../utils/asyncHandler'
 import { generateTokens, generateAccessToken, verifyToken } from '../utils/jwt.utils'
+import { getAuthUrl, getUserData } from '../remotes/google-oauth.remote'
 
-import { type AuthSchemaType, type IssueAccessTokenSchemaType } from '../schemas/auth.schema'
+import { type AuthSchemaType, type GoogleCallbackSchemaType } from '../schemas/auth.schema'
+import { type EmptySchemaType } from '../schemas/common.schema'
 import * as userService from '../services/user.service'
 import { type UserDocument } from '../models/user.model'
 
@@ -14,7 +16,7 @@ const refreshExpiresIn = ms(process.env.JWT_REFRESH_EXPIRES_IN ?? '30d')
 export const register = asyncHandler(async (
 	req: Req<AuthSchemaType>,
 	res: Response,
-	next: NextFunction) => {
+	next: NextFunction): Promise<void> => {
 	const user = await userService.create({ signin_method: 'email', ...req.body })
 	const data = user.toObject<UserDocument>()
 	delete data.password
@@ -24,7 +26,7 @@ export const register = asyncHandler(async (
 export const signin = asyncHandler(async (
 	req: Req<AuthSchemaType>,
 	res: Response,
-	next: NextFunction) => {
+	next: NextFunction): Promise<void> => {
 	const user = await userService.findOne({ email: req.body.email }, { signin_method: 1, email: 1, password: 1 }, { lean: false })
 
 	if (user === null) {
@@ -46,10 +48,39 @@ export const signin = asyncHandler(async (
 	res.status(200).send(new ApiResponse<{ accessToken: string }>('User signed in successfully', { accessToken: tokens.accessToken }))
 })
 
-export const issueAccessToken = asyncHandler(async (
-	req: Req<IssueAccessTokenSchemaType>,
+export const googleSignIn = asyncHandler((
+	req: Req<EmptySchemaType>,
 	res: Response,
-	next: NextFunction) => {
+	next: NextFunction): void => {
+	const authUrl = getAuthUrl()
+	res.redirect(authUrl)
+})
+
+export const googleCallback = asyncHandler(async (
+	req: Req<GoogleCallbackSchemaType>,
+	res: Response,
+	next: NextFunction): Promise<void> => {
+	const userInfo = await getUserData(req.query.code)
+
+	if (userInfo === null) {
+		throw new HttpException(httpErrors.UNAUTHORIZED, 'Invalid Grant Code')
+	}
+
+	let user = await userService.findOne({ email: userInfo.email }, { signin_method: 1, email: 1 }, { lean: true })
+
+	if (user === null) {
+		user = await userService.create({ signin_method: 'google', email: userInfo.email })
+	}
+
+	const tokens = generateTokens({ id: user._id })
+	res.cookie('refreshToken', tokens.refreshToken, { httpOnly: true, sameSite: 'strict', maxAge: refreshExpiresIn })
+	res.status(200).send(new ApiResponse<{ accessToken: string }>('User signed in successfully', { accessToken: tokens.accessToken }))
+})
+
+export const issueAccessToken = asyncHandler(async (
+	req: Req<EmptySchemaType>,
+	res: Response,
+	next: NextFunction): Promise<void> => {
 	const refreshToken = req.cookies?.refreshToken
 
 	if (refreshToken === undefined || refreshToken === null) {
