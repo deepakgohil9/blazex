@@ -1,4 +1,4 @@
-![image](https://github.com/deepakgohil9/blazex/assets/93052295/0b9b7e62-684c-4501-9932-1b4ba7b992f2)
+![image](https://github.com/deepakgohil9/blazex/assets/93052295/7da19783-45e6-46db-82e2-5b0e0db22cc3)
 
 # 🔥 Welcome to Blazex
 Blazex is an opinionated and blazing-fast 🚀 project starter package for building Node.js APIs with TypeScript, Express.js, and Mongoose. 
