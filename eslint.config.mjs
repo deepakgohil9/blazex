@@ -16,12 +16,12 @@ export default [
   },
   {
     languageOptions: {
-		parserOptions: {
-        	projectService: true,
-        	tsconfigRootDir: import.meta.dirname,
-      	},
-		globals: globals.node
-	}
+      parserOptions: {
+        projectService: true,
+        tsconfigRootDir: import.meta.dirname,
+      },
+      globals: globals.node
+    }
   },
   pluginJs.configs.recommended,
   ...tseslint.configs.strictTypeChecked,
@@ -29,7 +29,16 @@ export default [
     rules: {
       'no-console': 'error',
       'indent': ['error', 'tab'],
-      'quotes': ['error', 'single']
+      'quotes': ['error', 'single'],
+      'no-unused-vars': 'off',
+      '@typescript-eslint/no-unused-vars': [
+        'error',
+        {
+          'argsIgnorePattern': '^_',
+          'varsIgnorePattern': '^_',
+          'caughtErrorsIgnorePattern': '^_'
+        }
+      ]
     }
   }
 ];
