@@ -6,5 +6,5 @@ import logger from '../configs/logger'
 const format = config.env === 'development' ? 'dev' : 'combined'
 
 export default morgan(format, {
-	stream: { write: (message) => logger.http(message.trim()) }
+  stream: { write: (message) => logger.http(message.trim()) }
 })

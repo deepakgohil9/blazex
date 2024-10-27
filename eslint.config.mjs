@@ -28,7 +28,7 @@ export default [
   {
     rules: {
       'no-console': 'error',
-      'indent': ['error', 'tab'],
+      'indent': ['error', 2],
       'quotes': ['error', 'single'],
       'no-unused-vars': 'off',
       '@typescript-eslint/no-unused-vars': [

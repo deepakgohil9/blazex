@@ -1,53 +1,53 @@
 {
-	"name": "blazex",
-	"version": "2.0.0",
-	"description": "",
-	"author": "Deepak Gohil <gohildeepak2003@gmail.com>",
-	"license": "ISC",
-	"repository": {
-		"type": "git",
-		"url": "git+https://github.com/deepakgohil9/blazex.git"
-	},
-	"scripts": {
-		"build": "tsc && tsc-alias",
-		"start": "node dist/index.js",
-		"dev": "NODE_ENV=development tsx src",
-		"lint": "eslint",
-		"lint:fix": "eslint --fix",
-		"prepare": "husky"
-	},
-	"type": "module",
-	"dependencies": {
-		"bcryptjs": "^2.4.3",
-		"compression": "^1.7.4",
-		"cookie-parser": "^1.4.7",
-		"cors": "^2.8.5",
-		"dotenv": "^16.4.5",
-		"express": "^4.21.1",
-		"express-mongo-sanitize": "^2.2.0",
-		"helmet": "^8.0.0",
-		"jsonwebtoken": "^9.0.2",
-		"mongoose": "^8.7.3",
-		"morgan": "^1.10.0",
-		"winston": "^3.15.0",
-		"winston-daily-rotate-file": "^5.0.0",
-		"zod": "^3.23.8"
-	},
-	"devDependencies": {
-		"@eslint/js": "^9.13.0",
-		"@types/bcryptjs": "^2.4.6",
-		"@types/compression": "^1.7.5",
-		"@types/cookie-parser": "^1.4.7",
-		"@types/cors": "^2.8.17",
-		"@types/express": "^5.0.0",
-		"@types/jsonwebtoken": "^9.0.7",
-		"@types/morgan": "^1.9.9",
-		"eslint": "^9.13.0",
-		"eslint-config-love": "^89.0.1",
-		"globals": "^15.11.0",
-		"tsc-alias": "^1.8.10",
-		"tsx": "^4.19.1",
-		"typescript": "^5.6.3",
-		"typescript-eslint": "^8.10.0"
-	}
+  "name": "blazex",
+  "version": "2.0.0",
+  "description": "",
+  "author": "Deepak Gohil <gohildeepak2003@gmail.com>",
+  "license": "ISC",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/deepakgohil9/blazex.git"
+  },
+  "scripts": {
+    "build": "tsc && tsc-alias",
+    "start": "node dist/index.js",
+    "dev": "NODE_ENV=development tsx src",
+    "lint": "eslint",
+    "lint:fix": "eslint --fix",
+    "prepare": "husky"
+  },
+  "type": "module",
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "compression": "^1.7.4",
+    "cookie-parser": "^1.4.7",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "express": "^4.21.1",
+    "express-mongo-sanitize": "^2.2.0",
+    "helmet": "^8.0.0",
+    "jsonwebtoken": "^9.0.2",
+    "mongoose": "^8.7.3",
+    "morgan": "^1.10.0",
+    "winston": "^3.15.0",
+    "winston-daily-rotate-file": "^5.0.0",
+    "zod": "^3.23.8"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.13.0",
+    "@types/bcryptjs": "^2.4.6",
+    "@types/compression": "^1.7.5",
+    "@types/cookie-parser": "^1.4.7",
+    "@types/cors": "^2.8.17",
+    "@types/express": "^5.0.0",
+    "@types/jsonwebtoken": "^9.0.7",
+    "@types/morgan": "^1.9.9",
+    "eslint": "^9.13.0",
+    "eslint-config-love": "^89.0.1",
+    "globals": "^15.11.0",
+    "tsc-alias": "^1.8.10",
+    "tsx": "^4.19.1",
+    "typescript": "^5.6.3",
+    "typescript-eslint": "^8.10.0"
+  }
 }
