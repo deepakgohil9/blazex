@@ -39,6 +39,18 @@ export class ValidationError extends AppError {
 	}
 }
 
+export class BadRequest extends AppError {
+	constructor(data: { type?: string, title: string, code?: string, detail: string }) {
+		super({
+			type: data.type || 'https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400',
+			title: data.title,
+			status: 400,
+			code: data.code || 'bad_request',
+			detail: data.detail,
+		})
+	}
+}
+
 export class Unauthorized extends AppError {
 	constructor(data: { type?: string, title: string, code?: string, detail: string }) {
 		super({

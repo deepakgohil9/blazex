@@ -1,14 +1,10 @@
 import morgan from 'morgan'
-import type { Request, Response } from 'express'
 
+import config from '../configs/config'
 import logger from '../configs/logger'
 
-export const successHandler = morgan('dev', {
-	skip: (req: Request, res: Response) => res.statusCode >= 400,
-	stream: { write: (message) => logger.info(message.trim()) }
-})
+const format = config.env === 'development' ? 'dev' : 'combined'
 
-export const failureHandler = morgan('dev', {
-	skip: (req: Request, res: Response) => res.statusCode < 400,
-	stream: { write: (message) => logger.error(message.trim()) }
+export default morgan(format, {
+	stream: { write: (message) => logger.http(message.trim()) }
 })

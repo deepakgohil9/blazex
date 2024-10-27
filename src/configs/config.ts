@@ -5,9 +5,11 @@ const envVarsSchema = z.object({
 	PORT: z.number().default(3000),
 	CORS_ORIGIN: z.string().default('*'),
 	MONGO_URI: z.string({ required_error: 'MONGO_URI is required in .env' }),
-	JWT_ACCESS_SECRET: z.string({ required_error: 'JWT_ACCESS_SECRET is required in .env' }),
+	JWT_ACCESS_PUBLIC_KEY: z.string({ required_error: 'JWT_ACCESS_PUBLIC_KEY is required in .env' }),
+	JWT_ACCESS_PRIVATE_KEY: z.string({ required_error: 'JWT_ACCESS_PRIVATE_KEY is required in .env' }),
 	JWT_ACCESS_EXPIRES_IN: z.string({ required_error: 'JWT_ACCESS_EXPIRES_IN is required in .env' }),
-	JWT_REFRESH_SECRET: z.string({ required_error: 'JWT_REFRESH_SECRET is required in .env' }),
+	JWT_REFRESH_PUBLIC_KEY: z.string({ required_error: 'JWT_REFRESH_PUBLIC_KEY is required in .env' }),
+	JWT_REFRESH_PRIVATE_KEY: z.string({ required_error: 'JWT_REFRESH_PRIVATE_KEY is required in .env' }),
 	JWT_REFRESH_EXPIRES_IN: z.string({ required_error: 'JWT_REFRESH_EXPIRES_IN is required in .env' })
 })
 
@@ -22,12 +24,15 @@ export default {
 	},
 	jwt: {
 		access: {
-			secret: env.JWT_ACCESS_SECRET,
+			publicKey: env.JWT_ACCESS_PUBLIC_KEY,
+			privateKey: env.JWT_ACCESS_PRIVATE_KEY,
 			expiresIn: env.JWT_ACCESS_EXPIRES_IN
 		},
 		refresh: {
-			secret: env.JWT_REFRESH_SECRET,
+			publicKey: env.JWT_REFRESH_PUBLIC_KEY,
+			privateKey: env.JWT_REFRESH_PRIVATE_KEY,
 			expiresIn: env.JWT_REFRESH_EXPIRES_IN
 		}
-	}
+	},
+	logDir: 'logs'
 }

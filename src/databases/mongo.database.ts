@@ -7,4 +7,8 @@ const connect = async () => {
 	await mongoose.connect(config.mongo.uri, mongoOptions)
 }
 
-export default connect
+const disconnect = async () => {
+	await mongoose.disconnect()
+}
+
+export default { connect, disconnect }

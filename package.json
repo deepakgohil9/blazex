@@ -11,13 +11,14 @@
 	"scripts": {
 		"build": "tsc && tsc-alias",
 		"start": "node dist/index.js",
-		"dev": "NODE_ENV=development tsx src/app.ts",
+		"dev": "NODE_ENV=development tsx src",
 		"lint": "eslint",
 		"lint:fix": "eslint --fix",
 		"prepare": "husky"
 	},
 	"type": "module",
 	"dependencies": {
+		"bcryptjs": "^2.4.3",
 		"compression": "^1.7.4",
 		"cookie-parser": "^1.4.7",
 		"cors": "^2.8.5",
@@ -29,10 +30,12 @@
 		"mongoose": "^8.7.3",
 		"morgan": "^1.10.0",
 		"winston": "^3.15.0",
+		"winston-daily-rotate-file": "^5.0.0",
 		"zod": "^3.23.8"
 	},
 	"devDependencies": {
 		"@eslint/js": "^9.13.0",
+		"@types/bcryptjs": "^2.4.6",
 		"@types/compression": "^1.7.5",
 		"@types/cookie-parser": "^1.4.7",
 		"@types/cors": "^2.8.17",
