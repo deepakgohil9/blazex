@@ -1,7 +1,7 @@
 import { IUser, UserDoc, User } from '../models'
 import * as errors from '../utils/error.util'
 
-export const createUser = async (data: Omit<IUser, 'signInMethod'>): Promise<UserDoc> => {
+export const createUser = async (data: Omit<IUser, 'signInMethod'>): Promise<Omit<UserDoc, 'password' | 'comparePassword'>> => {
   const existingUser = await User.findOne({ email: data.email })
   if (existingUser) {
     throw new errors.BadRequest({
@@ -12,5 +12,6 @@ export const createUser = async (data: Omit<IUser, 'signInMethod'>): Promise<Use
 
   const user = new User({ ...data, signInMethod: 'email' })
   await user.save()
-  return user
+  const { password: _, ...userData } = user.toObject()
+  return userData
 }

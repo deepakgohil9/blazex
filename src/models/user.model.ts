@@ -2,15 +2,16 @@ import mongoose, { ObjectId } from 'mongoose'
 import bcrypt from 'bcryptjs'
 
 export interface IUser {
-	email: string
-	password: string
-	signInMethod: 'email' | 'google'
+  email: string
+  password: string
+  signInMethod: 'email' | 'google'
 }
 
-export interface UserDoc extends IUser, mongoose.Document<ObjectId> {
-	createdAt: Date
-	updatedAt: Date
-	comparePassword: (password: string) => Promise<boolean>
+export interface UserDoc extends IUser {
+  _id: ObjectId
+  createdAt: Date
+  updatedAt: Date
+  comparePassword: (password: string) => Promise<boolean>
 }
 
 const userSchema = new mongoose.Schema<UserDoc>({
@@ -19,7 +20,7 @@ const userSchema = new mongoose.Schema<UserDoc>({
   signInMethod: { type: String, required: true, enum: ['email', 'google'] },
 }, { timestamps: true })
 
-userSchema.pre<UserDoc>('save', async function (this: UserDoc, next: mongoose.CallbackWithoutResultAndOptionalError) {
+userSchema.pre<UserDoc & mongoose.Document<ObjectId>>('save', async function (this: UserDoc & mongoose.Document<ObjectId>, next: mongoose.CallbackWithoutResultAndOptionalError) {
   if (this.signInMethod !== 'email' || !this.isModified('password')) {
     next()
     return

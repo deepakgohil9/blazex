@@ -1,7 +1,7 @@
 export class AppError extends Error {
   type: string  	// A URI reference that identifies the problem type. The type field is used to identify the error type and provide a link to the documentation that describes the error in more detail
   title: string	// A short, human-readable summary of the problem type. It SHOULD NOT change from occurrence to occurrence of the problem, except for purposes of localization.
-  status: number	// The HTTP status code applicable to this problem, expressed as a string value.
+  status: number	// The HTTP status code applicable to this problem.
   code: string	// An application-specific error code, expressed as a string value.
   detail: string	// A human-readable explanation specific to this occurrence of the problem.
 
