@@ -7,10 +7,13 @@ export interface IUser {
   signInMethod: 'email' | 'google'
 }
 
-export interface UserDoc extends IUser {
+export interface UserLeanDoc extends IUser {
   _id: ObjectId
   createdAt: Date
   updatedAt: Date
+}
+
+export interface UserDoc extends UserLeanDoc, mongoose.Document<ObjectId> {
   comparePassword: (password: string) => Promise<boolean>
 }
 
