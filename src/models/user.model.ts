@@ -1,4 +1,4 @@
-import mongoose, { ObjectId } from 'mongoose'
+import mongoose, { ObjectId, Model } from 'mongoose'
 import bcrypt from 'bcryptjs'
 
 export interface IUser {
@@ -7,17 +7,19 @@ export interface IUser {
   signInMethod: 'email' | 'google'
 }
 
-export interface UserLeanDoc extends IUser {
+export interface UserDoc extends IUser {
   _id: ObjectId
   createdAt: Date
   updatedAt: Date
 }
 
-export interface UserDoc extends UserLeanDoc, mongoose.Document<ObjectId> {
-  comparePassword: (password: string) => Promise<boolean>
+interface UserMethods {
+  comparePassword(password: string): Promise<boolean>
 }
 
-const userSchema = new mongoose.Schema<UserDoc>({
+type UserModel = Model<UserDoc, {}, UserMethods>; // eslint-disable-line @typescript-eslint/no-empty-object-type
+
+const userSchema = new mongoose.Schema<UserDoc, UserModel, UserMethods>({
   email: { type: String, required: true, unique: true },
   password: { type: String, required: function (this: UserDoc) { return this.signInMethod === 'email' } },
   signInMethod: { type: String, required: true, enum: ['email', 'google'] },
@@ -38,4 +40,4 @@ userSchema.methods.comparePassword = async function (this: UserDoc, password: st
   return bcrypt.compare(password, this.password)
 }
 
-export const User = mongoose.model<UserDoc>('User', userSchema)
+export const User = mongoose.model<UserDoc, UserModel>('User', userSchema)

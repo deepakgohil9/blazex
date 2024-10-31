@@ -1,8 +1,9 @@
-import { IUser, UserLeanDoc, UserDoc, User } from '../models'
+import { IUser, UserDoc, User } from '../models'
 import * as errors from '../utils/error.util'
 
-export const createUser = async (data: Omit<IUser, 'signInMethod'>): Promise<Omit<UserLeanDoc, 'password'>> => {
+export const createUser = async (data: Omit<IUser, 'signInMethod'>): Promise<Omit<UserDoc, 'password'>> => {
   const existingUser = await User.findOne({ email: data.email })
+
   if (existingUser) {
     throw new errors.BadRequest({
       title: 'Email already in use',
@@ -12,18 +13,6 @@ export const createUser = async (data: Omit<IUser, 'signInMethod'>): Promise<Omi
 
   const user = new User({ ...data, signInMethod: 'email' })
   await user.save()
-  const { password: _, ...userData } = user.toObject<UserLeanDoc>()
+  const { password: _, ...userData } = user.toObject<UserDoc>()
   return userData
-}
-
-export const getUserByEmail = async (email: string): Promise<UserDoc> => {
-  const user = await User.findOne({ email })
-  if (!user) {
-    throw new errors.NotFound({
-      title: 'User not found',
-      detail: 'The user with the specified email address does not exist.'
-    })
-  }
-
-  return user
 }
