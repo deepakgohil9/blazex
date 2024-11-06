@@ -25,10 +25,7 @@ export const genrateAccessToken = (payload: Payload): string => {
   return accessToken
 }
 
-export const verifyToken = (type: 'access' | 'refresh', token?: string): Payload => {
-  if (!token) {
-    throw new errors.Unauthorized({ title: 'No token provided', detail: `Unauthorized: No ${type} token provided, Please login to get a ${type} token` })
-  }
+export const verifyToken = (type: 'access' | 'refresh', token: string): Payload => {
   try {
     const publicKey = config.jwt[type].publicKey
     const decoded = jwt.verify(token, publicKey) as Payload

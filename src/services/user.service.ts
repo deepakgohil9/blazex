@@ -1,3 +1,4 @@
+import _ from 'lodash'
 import { IUser, UserDoc, User } from '../models'
 import * as errors from '../utils/error.util'
 
@@ -13,6 +14,19 @@ export const createUser = async (data: Omit<IUser, 'signInMethod'>): Promise<Omi
 
   const user = new User({ ...data, signInMethod: 'email' })
   await user.save()
-  const { password: _, ...userData } = user.toObject<UserDoc>()
-  return userData
+
+  return _.omit(user.toObject<UserDoc>(), 'password')
+}
+
+export const findOrCreateUser = async (data: IUser): Promise<Omit<UserDoc, 'password'>> => {
+  const existing = await User.findOne({ email: data.email })
+
+  if (existing) {
+    return _.omit(existing.toObject<UserDoc>(), 'password')
+  }
+
+  const user = new User({ ...data, signInMethod: 'google' })
+  await user.save()
+
+  return _.omit(user.toObject<UserDoc>(), 'password')
 }

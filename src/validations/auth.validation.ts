@@ -28,5 +28,15 @@ export const login = z.object({
   }).strict(),
 })
 
+export const googleCallback = z.object({
+  query: z.object({
+    code: z
+      .string({ required_error: 'Field `code` is required for google callback.' })
+  }),
+  params: z.object({}).strict(),
+  body: z.object({}).strict(),
+})
+
 export type RegisterType = z.infer<typeof register>
 export type LoginType = z.infer<typeof login>
+export type GoogleCallbackType = z.infer<typeof googleCallback>

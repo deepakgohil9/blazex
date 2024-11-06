@@ -1,3 +1,4 @@
+import _ from 'lodash'
 import { UserDoc, User } from '../models'
 import * as errors from '../utils/error.util'
 
@@ -11,6 +12,5 @@ export const login = async (email: string, password: string): Promise<Omit<UserD
     })
   }
 
-  const { password: _, ...userData } = user.toObject<UserDoc>()
-  return userData
+  return _.omit(user.toObject<UserDoc>(), 'password')
 }

@@ -4,14 +4,17 @@ const envVarsSchema = z.object({
   NODE_ENV: z.enum(['development', 'production', 'test']).default('development'),
   PORT: z.number().default(3000),
   CORS_ORIGIN: z.string().default('*'),
-  MONGO_URI: z.string({ required_error: 'MONGO_URI is required in .env' }),
-  JWT_ACCESS_PUBLIC_KEY: z.string({ required_error: 'JWT_ACCESS_PUBLIC_KEY is required in .env' }),
-  JWT_ACCESS_PRIVATE_KEY: z.string({ required_error: 'JWT_ACCESS_PRIVATE_KEY is required in .env' }),
-  JWT_ACCESS_EXPIRES_IN: z.string({ required_error: 'JWT_ACCESS_EXPIRES_IN is required in .env' }),
-  JWT_REFRESH_PUBLIC_KEY: z.string({ required_error: 'JWT_REFRESH_PUBLIC_KEY is required in .env' }),
-  JWT_REFRESH_PRIVATE_KEY: z.string({ required_error: 'JWT_REFRESH_PRIVATE_KEY is required in .env' }),
-  JWT_REFRESH_EXPIRES_IN: z.string({ required_error: 'JWT_REFRESH_EXPIRES_IN is required in .env' })
-})
+  MONGO_URI: z.string(),
+  JWT_ACCESS_PUBLIC_KEY: z.string(),
+  JWT_ACCESS_PRIVATE_KEY: z.string(),
+  JWT_ACCESS_EXPIRES_IN: z.string(),
+  JWT_REFRESH_PUBLIC_KEY: z.string(),
+  JWT_REFRESH_PRIVATE_KEY: z.string(),
+  JWT_REFRESH_EXPIRES_IN: z.string(),
+  GOOGLE_CLIENT_ID: z.string(),
+  GOOGLE_CLIENT_SECRET: z.string(),
+  GOOGLE_REDIRECT_URI: z.string(),
+}).required()
 
 const env = envVarsSchema.parse(process.env)
 
@@ -19,6 +22,7 @@ export default {
   env: env.NODE_ENV,
   port: env.PORT,
   corsOrigin: env.CORS_ORIGIN,
+  logDir: 'logs',
   mongo: {
     uri: env.MONGO_URI
   },
@@ -34,5 +38,10 @@ export default {
       expiresIn: env.JWT_REFRESH_EXPIRES_IN
     }
   },
-  logDir: 'logs'
+  google: {
+    clientId: env.GOOGLE_CLIENT_ID,
+    clientSecret: env.GOOGLE_CLIENT_SECRET,
+    redirectUri: env.GOOGLE_REDIRECT_URI,
+    scopes : ['https://www.googleapis.com/auth/userinfo.profile', 'https://www.googleapis.com/auth/userinfo.email']
+  }
 }

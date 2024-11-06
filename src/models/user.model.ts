@@ -3,7 +3,7 @@ import bcrypt from 'bcryptjs'
 
 export interface IUser {
   email: string
-  password: string
+  password?: string
   signInMethod: 'email' | 'google'
 }
 
@@ -26,7 +26,7 @@ const userSchema = new mongoose.Schema<UserDoc, UserModel, UserMethods>({
 }, { timestamps: true })
 
 userSchema.pre<UserDoc & mongoose.Document<ObjectId>>('save', async function (this: UserDoc & mongoose.Document<ObjectId>, next: mongoose.CallbackWithoutResultAndOptionalError) {
-  if (this.signInMethod !== 'email' || !this.isModified('password')) {
+  if (this.password === undefined || !this.isModified('password')) {
     next()
     return
   }
@@ -37,7 +37,7 @@ userSchema.pre<UserDoc & mongoose.Document<ObjectId>>('save', async function (th
 })
 
 userSchema.methods.comparePassword = async function (this: UserDoc, password: string): Promise<boolean> {
-  return bcrypt.compare(password, this.password)
+  return this.password ? bcrypt.compare(password, this.password) : false
 }
 
 export const User = mongoose.model<UserDoc, UserModel>('User', userSchema)
