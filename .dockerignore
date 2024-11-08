@@ -9,3 +9,7 @@
 **/.editorconfig
 **/.aws
 **/dist
+**/logs
+**/.husky
+**/.dockerignore
+**/.gitignore

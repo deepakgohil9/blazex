@@ -1,10 +1,14 @@
-/* eslint-disable no-console */
 import mongoose from 'mongoose'
 
-const connect = async (): Promise<void> => {
-	const MONGO_URI = process.env.MONGO_URI ?? ''
-	await mongoose.connect(MONGO_URI)
-	console.log('🛠️ Successfully connected to the database!')
+import config from '../configs/config'
+import mongoOptions from '../configs/mongo'
+
+const connect = async () => {
+  await mongoose.connect(config.mongo.uri, mongoOptions)
 }
 
-export default connect
+const disconnect = async () => {
+  await mongoose.disconnect()
+}
+
+export default { connect, disconnect }

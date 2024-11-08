@@ -1,41 +1,59 @@
-/* eslint-disable import/first */
-/* eslint-disable no-console */
-import express, { type Request, type Response } from 'express'
-import dotenv from 'dotenv'
+// importing external modules
+import express from 'express'
 import helmet from 'helmet'
-import xss from 'xss-shield'
 import cookieParser from 'cookie-parser'
 import cors from 'cors'
-dotenv.config()
+import compression from 'compression'
 
-import connect from './databases/mongo.database'
-import errorHandler from './middlewares/errorHandler.middleware'
-import sanitizer from './middlewares/sanitizer.middleware'
 
-import authRoute from './routes/auth.route'
+// importing configs
+import config from './configs/config'
 
-const PORT = process.env.PORT ?? 3000
+// importing middlewares
+import morgan from './middlewares/morgan.middleware'
+import mongoSantize from './middlewares/mongo-santize.middleware'
+import healthcheck from './middlewares/healthcheck.handler'
+import notFound from './middlewares/not-found.handler'
+import errorHandler from './middlewares/error.handler'
+
+// import routes
+import v1Routes from './routes/v1'
+
 const app = express()
 
-app.use(cors({ origin: process.env.CORS_ORIGIN ?? '*', credentials: true }))
+app.use(morgan)
+
+// sets security HTTP headers
 app.use(helmet())
+
+// parse cookies
 app.use(cookieParser())
+
+// parse json and urlencoded data from the request body
 app.use(express.json())
-app.use(xss.xssShield())
-app.use(sanitizer)
+app.use(express.urlencoded({ extended: true }))
 
-app.use('/auth', authRoute)
+// sanitize request data to prevent NoSQL injection attacks
+app.use(mongoSantize)
 
-app.get('/', (req: Request, res: Response): void => { res.send({ message: '🚀 Hello! I am alive!' }) })
-app.use((req: Request, res: Response): void => {
-	res.send({ message: '🚧 Error 404: Requested endpoint not found.' })
-})
+// enable CORS - Cross Origin Resource Sharing
+app.use(cors({ origin: config.corsOrigin }))
+app.options('*', cors())
+
+// gzip compression
+app.use(compression())
+
+// healthcheck endpoint
+app.get('/', healthcheck)
+
+
+/* Routes Go Here */
+app.use('/v1', v1Routes)
+
+// 404 handler
+app.use(notFound)
+
+// error handler
 app.use(errorHandler)
 
-app.listen(PORT, (): void => {
-	connect().then(() => {
-		console.log(`🚀 Server is running at http://localhost:${PORT}`)
-	}).catch((error) => {
-		throw new Error(`❗Error connecting to the database: ${(error as Error).message}`)
-	})
-})
+export default app

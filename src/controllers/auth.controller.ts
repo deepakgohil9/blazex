@@ -1,97 +1,56 @@
-import { type Response, type NextFunction } from 'express'
-import ms from 'ms'
-import { HttpException, httpErrors } from '../utils/HttpException'
-import ApiResponse from '../utils/ApiResponse'
-import asyncHandler, { type Req } from '../utils/asyncHandler'
-import { generateTokens, generateAccessToken, verifyToken } from '../utils/jwt.utils'
-import { getAuthUrl, getUserData } from '../remotes/google-oauth.remote'
+import asyncHandler, { Req, Res, Nxt } from '../utils/async-handler'
+import ApiResponse from '../utils/api-response'
+import * as errors from '../utils/error.util'
+import config from '../configs/config'
 
-import { type AuthSchemaType, type GoogleCallbackSchemaType } from '../schemas/auth.schema'
-import { type EmptySchemaType } from '../schemas/common.schema'
-import * as userService from '../services/user.service'
-import { type UserDocument } from '../models/user.model'
+import { authTypes, commonTypes } from '../validations'
+import { authService, tokenService, userService } from '../services'
+import { googleAuth } from '../remotes'
 
-const refreshExpiresIn = ms(process.env.JWT_REFRESH_EXPIRES_IN ?? '30d')
 
-export const register = asyncHandler(async (
-	req: Req<AuthSchemaType>,
-	res: Response,
-	next: NextFunction): Promise<void> => {
-	const user = await userService.create({ signin_method: 'email', ...req.body })
-	const data = user.toObject<UserDocument>()
-	delete data.password
-	res.status(201).send(new ApiResponse<UserDocument>('User created successfully', data))
+export const register = asyncHandler(async (req: Req<authTypes.RegisterType>, res: Res, _next: Nxt) => {
+  const { email, password } = req.body
+  const user = await userService.createUser({ email, password })
+  const tokens = tokenService.generateTokens({ id: user._id, email: user.email })
+  res.status(201).send(new ApiResponse(201, 'User created successfully', { user, tokens }))
 })
 
-export const signin = asyncHandler(async (
-	req: Req<AuthSchemaType>,
-	res: Response,
-	next: NextFunction): Promise<void> => {
-	const user = await userService.findOne({ email: req.body.email }, { signin_method: 1, email: 1, password: 1 }, { lean: false })
 
-	if (user === null) {
-		throw new HttpException(httpErrors.NOT_FOUND, 'User not found')
-	}
-
-	if (user.signin_method !== 'email') {
-		throw new HttpException(httpErrors.BAD_REQUEST, `User signed up with ${user.signin_method}`)
-	}
-
-	const isMatch = await user.comparePassword(req.body.password)
-
-	if (!isMatch) {
-		throw new HttpException(httpErrors.UNAUTHORIZED, 'Invalid credentials')
-	}
-
-	const tokens = generateTokens({ id: user._id })
-	res.cookie('refreshToken', tokens.refreshToken, { httpOnly: true, sameSite: 'strict', maxAge: refreshExpiresIn })
-	res.status(200).send(new ApiResponse<{ accessToken: string }>('User signed in successfully', { accessToken: tokens.accessToken }))
+export const login = asyncHandler(async (req: Req<authTypes.LoginType>, res: Res, _next: Nxt) => {
+  const { email, password } = req.body
+  const user = await authService.login(email, password)
+  const tokens = tokenService.generateTokens({ id: user._id, email: user.email })
+  res.send(new ApiResponse(200, 'User logged in successfully', { user, tokens }))
 })
 
-export const googleSignIn = asyncHandler((
-	req: Req<EmptySchemaType>,
-	res: Response,
-	next: NextFunction): void => {
-	const authUrl = getAuthUrl()
-	res.redirect(authUrl)
+
+export const refreshToken = asyncHandler((req: Req<commonTypes.EmptyType>, res: Res, _next: Nxt) => {
+  const refreshToken = req.headers['x-refresh-token'] as string | undefined
+  if (!refreshToken) {
+    throw new errors.Unauthorized({ title: 'No token provided', detail: `Unauthorized: No refresh token provided, Please login to get a refresh token` })
+  }
+
+  const payload = tokenService.verifyToken('refresh', refreshToken)
+  const accessToken = tokenService.genrateAccessToken(payload)
+  const tokens = { accessToken, refreshToken }
+  res.send(new ApiResponse(200, 'Token refreshed successfully.', { tokens }))
 })
 
-export const googleCallback = asyncHandler(async (
-	req: Req<GoogleCallbackSchemaType>,
-	res: Response,
-	next: NextFunction): Promise<void> => {
-	const userInfo = await getUserData(req.query.code)
 
-	if (userInfo === null) {
-		throw new HttpException(httpErrors.UNAUTHORIZED, 'Invalid Grant Code')
-	}
-
-	let user = await userService.findOne({ email: userInfo.email }, { signin_method: 1, email: 1 }, { lean: true })
-
-	if (user === null) {
-		user = await userService.create({ signin_method: 'google', email: userInfo.email })
-	}
-
-	const tokens = generateTokens({ id: user._id })
-	res.cookie('refreshToken', tokens.refreshToken, { httpOnly: true, sameSite: 'strict', maxAge: refreshExpiresIn })
-	res.status(200).send(new ApiResponse<{ accessToken: string }>('User signed in successfully', { accessToken: tokens.accessToken }))
+export const googleSignIn = asyncHandler(async (_req: Req<commonTypes.EmptyType>, res: Res, _next: Nxt) => {
+  const url = googleAuth.generateAuthUrl()
+  res.send(new ApiResponse(200, 'Google auth url generated successfully.', { url }))
 })
 
-export const issueAccessToken = asyncHandler(async (
-	req: Req<EmptySchemaType>,
-	res: Response,
-	next: NextFunction): Promise<void> => {
-	const refreshToken = req.cookies?.refreshToken
 
-	if (refreshToken === undefined || refreshToken === null) {
-		throw new HttpException(httpErrors.UNAUTHORIZED, 'Access denied')
-	}
+export const googleSignInCallback = asyncHandler(async (req: Req<authTypes.GoogleCallbackType>, res: Res, _next: Nxt) => {
+  const { code } = req.query
+  const googleUser = await googleAuth.getUserData(code)
+  if (!googleUser) {
+    throw new errors.Unauthorized({ title: 'Google authentication failed.', detail: 'Google authentication failed, please try again.' })
+  }
 
-	const payload = verifyToken(refreshToken as string, 'refresh')
-	if (payload === null) {
-		throw new HttpException(httpErrors.UNAUTHORIZED, 'Invalid token')
-	}
-
-	const accessToken = generateAccessToken({ id: payload.id })
-	res.status(200).send(new ApiResponse<{ accessToken: string }>('Access token generated successfully', { accessToken }))
+  const user = await userService.findOrCreateUser({ email: googleUser.email!, signInMethod: 'google' })
+  const tokens = tokenService.generateTokens({ id: user._id, email: user.email })
+  res.redirect(`${config.authRedirectUrl}?accessToken=${tokens.accessToken}&refreshToken=${tokens.refreshToken}`)
 })

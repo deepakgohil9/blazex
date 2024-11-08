@@ -2,17 +2,34 @@
 
 import { promisify } from 'util'
 import cp from 'child_process'
-import path from 'path'
 import fs from 'fs'
-import ora from 'ora'
+import path from 'path'
+import { rimraf } from 'rimraf'
+import yoctoSpinner from 'yocto-spinner'
 
 const exec = promisify(cp.exec)
-const rm = promisify(fs.rm)
+
+import process from 'node:process';
+
+const runCommand = async (command, description) => {
+  const spinner = yoctoSpinner({ text: description }).start()
+  try {
+    const { stdout, stderr } = await exec(command)
+    console.log(stdout)
+    console.error(stderr)
+    spinner.success()
+  }
+  catch (error) {
+    console.error(error)
+    spinner.error()
+  }
+}
 
 if (process.argv.length < 3) {
-	console.error('You must provide a name for the project')
-	console.error('Example: npx blaze my-project')
-	process.exit(1)
+  console.error('Please provide a project name!')
+  console.error('Example:')
+  console.error('    npx blazex my-project')
+  process.exit(1)
 }
 
 const projectName = process.argv[2]
@@ -22,71 +39,65 @@ const projectDir = path.join(currentDir, projectName)
 const gitRepo = 'https://github.com/deepakgohil9/blaze.git'
 
 if (fs.existsSync(projectDir)) {
-	console.error(`Directory ${projectName} already exists`)
-	process.exit(1)
+  console.error(`Directory ${projectName} already exists!`)
+  process.exit(1)
 }
 
 fs.mkdirSync(projectDir)
 
-const downloadProject = async () => {
-	const spinner = ora('Downloading files...').start()
-	await exec(`git clone --depth 1 ${gitRepo} ${projectDir} --quiet`)
-	spinner.succeed()
+const setupProject = async () => {
+  let spinner
+  try {
+    await runCommand(`git clone --depth 1 ${gitRepo} ${projectName} --quiet`, 'Downloading project template...')
+
+    // Removing unnecessary extra files
+    spinner = yoctoSpinner({ text: 'Cleaning up project...' }).start()
+    // await fs.unlink(path.join(projectDir, 'LICENSE'))
+    // await fs.unlink(path.join(projectDir, 'package-lock.json'))
+    await rimraf(path.join(projectDir, 'LICENSE'))
+    await rimraf(path.join(projectDir, 'package-lock.json'))
+    await rimraf(path.join(projectDir, '.git'))
+    await rimraf(path.join(projectDir, '.github'))
+    await rimraf(path.join(projectDir, 'bin'))
+    spinner.success()
+
+    // Changing working directory to project directory
+    process.chdir(projectDir)
+
+    // Initializing git repository
+    await runCommand('git init', 'Initializing git repository...')
+
+    // Installing dependencies
+    await runCommand('npm install', 'Installing dependencies...')
+    await runCommand('npm uninstall ora rimraf', 'Removing unnecessary dependencies...')
+
+    // Updating package.json
+    spinner = yoctoSpinner({ text: 'Updating package.json...' }).start()
+    const fileContent = fs.readFileSync(path.join(projectDir, 'package.json'), 'utf8')
+    const packageJson = JSON.parse(fileContent)
+    packageJson.name = projectName
+    packageJson.version = '0.1.0'
+    packageJson.description = ''
+    packageJson.author = ''
+    packageJson.keywords = []
+    packageJson.license = ''
+    delete packageJson.repository
+    delete packageJson.bin
+    spinner.success()
+
+    console.log('🎉 Project has been initialized successfully!')
+    console.log('')
+    console.log('🚀 To get started:')
+    console.log(`    cd ${projectName}`)
+    console.log('    npm run dev')
+    console.log('')
+    console.log('🦄 Enjoy your production-ready project! with a large set of ready-to-use features and tools. Check out the README.md file for more information.')
+    console.log('')
+  } catch (error) {
+    if (spinner) spinner.error()
+    fs.rmSync(projectDir, { recursive: true })
+    console.error(error)
+  }
 }
 
-const cleanProject = async () => {
-	const spinner = ora('Cleaning files...').start()
-	await rm(path.join(projectDir, '.git'), { recursive: true, force: true })
-	await rm(path.join(projectDir, '.github'), { recursive: true, force: true })
-	await rm(path.join(projectDir, 'bin'), { recursive: true, force: true })
-	await rm(path.join(projectDir, 'LICENSE'), { force: true })
-	await rm(path.join(projectDir, 'README.md'), { force: true })
-	await rm(path.join(projectDir, 'package-lock.json'), { force: true })
-	process.chdir(projectDir)
-	await exec('npm uninstall ora')
-	spinner.succeed()
-}
-
-const installDependencies = async () => {
-	const spinner = ora('Installing dependencies...').start()
-	await exec('npm install')
-	spinner.succeed()
-}
-
-const updatingDependencies = async () => {
-	const spinner = ora('Updating dependencies...').start()
-	await exec('npm update --save')
-	spinner.succeed()
-}
-
-const updatePackageJson = async () => {
-	const spinner = ora('Updating package.json...').start()
-	const packageJsonPath = path.join(projectDir, 'package.json')
-	const packageText = fs.readFileSync(packageJsonPath, 'utf8')
-	const packageJson = JSON.parse(packageText)
-	packageJson.name = projectName
-	packageJson.version = '1.0.0'
-	packageJson.description = ''
-	packageJson.author = ''
-	packageJson.license = ''
-	delete packageJson.bin
-	delete packageJson.repository
-	fs.writeFileSync(packageJsonPath, JSON.stringify(packageJson, 0, /\t/.test(packageText) ? '\t' : 2) + '\n')
-	spinner.succeed()
-}
-
-const main = async () => {
-	try {
-		await downloadProject()
-		await cleanProject()
-		await installDependencies()
-		await updatingDependencies()
-		await updatePackageJson()
-		console.log(`Project ${projectName} created successfully!`)
-	} catch (error) {
-		fs.rmSync(projectDir, { recursive: true, force: true })
-		console.error('Error creating project', error)
-	}
-}
-
-main()
+setupProject()
