@@ -1,5 +1,5 @@
 # Build stage
-FROM node:lts as builder
+FROM node:lts AS builder
 
 WORKDIR /usr/src/app
 
