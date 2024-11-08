@@ -26,6 +26,7 @@ export default {
   mongo: {
     uri: env.MONGO_URI
   },
+  authRedirectUrl: 'https://httpbin.org/get', // This is a dummy URL, replace it with your actual URL
   jwt: {
     access: {
       publicKey: env.JWT_ACCESS_PUBLIC_KEY,
@@ -42,6 +43,6 @@ export default {
     clientId: env.GOOGLE_CLIENT_ID,
     clientSecret: env.GOOGLE_CLIENT_SECRET,
     redirectUri: env.GOOGLE_REDIRECT_URI,
-    scopes : ['https://www.googleapis.com/auth/userinfo.profile', 'https://www.googleapis.com/auth/userinfo.email']
+    scopes: ['https://www.googleapis.com/auth/userinfo.profile', 'https://www.googleapis.com/auth/userinfo.email']
   }
 }

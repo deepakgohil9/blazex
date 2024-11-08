@@ -1,6 +1,7 @@
 import asyncHandler, { Req, Res, Nxt } from '../utils/async-handler'
 import ApiResponse from '../utils/api-response'
 import * as errors from '../utils/error.util'
+import config from '../configs/config'
 
 import { authTypes, commonTypes } from '../validations'
 import { authService, tokenService, userService } from '../services'
@@ -51,5 +52,5 @@ export const googleSignInCallback = asyncHandler(async (req: Req<authTypes.Googl
 
   const user = await userService.findOrCreateUser({ email: googleUser.email!, signInMethod: 'google' })
   const tokens = tokenService.generateTokens({ id: user._id, email: user.email })
-  res.send(new ApiResponse(200, 'User logged in successfully', { user, tokens }))
+  res.redirect(`${config.authRedirectUrl}?accessToken=${tokens.accessToken}&refreshToken=${tokens.refreshToken}`)
 })
