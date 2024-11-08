@@ -14,14 +14,12 @@ import process from 'node:process';
 const runCommand = async (command, description) => {
   const spinner = yoctoSpinner({ text: description }).start()
   try {
-    const { stdout, stderr } = await exec(command)
-    console.log(stdout)
-    console.error(stderr)
+    await exec(command)
     spinner.success()
   }
   catch (error) {
-    console.error(error)
     spinner.error()
+    console.error(error)
   }
 }
 
@@ -85,6 +83,7 @@ const setupProject = async () => {
     delete packageJson.bin
     spinner.success()
 
+    console.log('')
     console.log('🎉 Project has been initialized successfully!')
     console.log('')
     console.log('🚀 To get started:')
