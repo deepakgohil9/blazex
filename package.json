@@ -1,6 +1,6 @@
 {
   "name": "blazex",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "description": "Set up a production-ready, TypeScript-powered REST API project using Express instantly with a single command.",
   "main": "dist/index.js",
   "author": "Deepak Gohil <gohildeepak2003@gmail.com>",
