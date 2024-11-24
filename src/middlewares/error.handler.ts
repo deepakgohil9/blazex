@@ -22,7 +22,7 @@ const errorHandler = (error: Error, req: Request, res: Response, _next: NextFunc
     return
   }
 
-  if(isInvalidJsonError(error)) {
+  if (isInvalidJsonError(error)) {
     res.setHeader('Content-Type', 'application/problem+json')
     res.status(400).send({
       type: 'https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400',
