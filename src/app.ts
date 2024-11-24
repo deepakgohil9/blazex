@@ -13,6 +13,7 @@ import config from './configs/config'
 import morgan from './middlewares/morgan.middleware'
 import mongoSantize from './middlewares/mongo-santize.middleware'
 import healthcheck from './middlewares/healthcheck.handler'
+import { instrumentMiddleware, metricsHandler } from './middlewares/metrics.middleware'
 import notFound from './middlewares/not-found.handler'
 import errorHandler from './middlewares/error.handler'
 
@@ -43,9 +44,14 @@ app.options('*', cors())
 // gzip compression
 app.use(compression())
 
+// instrument metrics middleware
+app.use(instrumentMiddleware)
+
 // healthcheck endpoint
 app.get('/', healthcheck)
 
+// metrics endpoint
+app.get('/metrics', metricsHandler)
 
 /* Routes Go Here */
 app.use('/v1', v1Routes)
