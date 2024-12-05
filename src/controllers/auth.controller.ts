@@ -1,6 +1,6 @@
 import asyncHandler, { Req, Res, Nxt } from '../utils/async-handler'
 import ApiResponse from '../utils/api-response'
-import * as errors from '../utils/error.util'
+import * as errors from '../utils/error'
 import config from '../configs/config'
 
 import { authTypes, commonTypes } from '../validations'

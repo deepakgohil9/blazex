@@ -1,6 +1,6 @@
 import _ from 'lodash'
 import { UserDoc, User } from '../models'
-import * as errors from '../utils/error.util'
+import * as errors from '../utils/error'
 
 export const login = async (email: string, password: string): Promise<Omit<UserDoc, 'password'>> => {
   const user = await User.findOne({ email })

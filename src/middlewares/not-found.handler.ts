@@ -1,6 +1,6 @@
 import type { Request, Response, NextFunction } from 'express'
 
-import { NotFound } from '../utils/error.util'
+import { NotFound } from '../utils/error'
 
 const notFound = (req: Request, res: Response, next: NextFunction) => {
   next(new NotFound({

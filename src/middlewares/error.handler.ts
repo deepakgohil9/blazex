@@ -1,5 +1,5 @@
 import type { Request, Response, NextFunction } from 'express'
-import { AppError } from '../utils/error.util'
+import { AppError } from '../utils/error'
 import config from '../configs/config'
 import logger from '../configs/logger'
 

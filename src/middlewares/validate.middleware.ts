@@ -1,9 +1,9 @@
 import type { Request, Response, NextFunction, RequestHandler } from 'express'
 import z from 'zod'
 
-import { ValidationError } from '../utils/error.util'
+import { ValidationError } from '../utils/error'
 
-type baseType = z.ZodObject<{body: z.AnyZodObject, params: z.AnyZodObject, query: z.AnyZodObject}>
+type baseType = z.ZodObject<{ body: z.AnyZodObject, params: z.AnyZodObject, query: z.AnyZodObject }>
 
 /* eslint-disable-next-line @typescript-eslint/no-unnecessary-type-parameters */
 const validate = <T extends baseType>(schema: T): RequestHandler => {

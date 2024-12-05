@@ -1,6 +1,6 @@
 import mongoSantize from 'express-mongo-sanitize'
 
-import { ValidationError } from '../utils/error.util'
+import { ValidationError } from '../utils/error'
 
 const santize = mongoSantize({
   onSanitize: (data) => {

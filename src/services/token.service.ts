@@ -1,7 +1,7 @@
 import { ObjectId } from 'mongoose'
 import jwt from 'jsonwebtoken'
 
-import * as errors from '../utils/error.util'
+import * as errors from '../utils/error'
 import config from '../configs/config'
 
 export interface Payload {
