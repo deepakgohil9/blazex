@@ -27,7 +27,7 @@
   },
   "type": "module",
   "dependencies": {
-    "bcryptjs": "^2.4.3",
+    "argon2": "^0.41.1",
     "compression": "^1.7.4",
     "cookie-parser": "^1.4.7",
     "cors": "^2.8.5",
@@ -40,6 +40,7 @@
     "lodash": "^4.17.21",
     "mongoose": "^8.7.3",
     "morgan": "^1.10.0",
+    "ms": "^2.1.3",
     "prom-client": "^15.1.3",
     "response-time": "^2.3.3",
     "rimraf": "^6.0.1",
@@ -51,7 +52,6 @@
   },
   "devDependencies": {
     "@eslint/js": "^9.13.0",
-    "@types/bcryptjs": "^2.4.6",
     "@types/compression": "^1.7.5",
     "@types/cookie-parser": "^1.4.7",
     "@types/cors": "^2.8.17",
@@ -59,6 +59,7 @@
     "@types/jsonwebtoken": "^9.0.7",
     "@types/lodash": "^4.17.13",
     "@types/morgan": "^1.9.9",
+    "@types/ms": "^0.7.34",
     "@types/response-time": "^2.3.8",
     "eslint": "^9.13.0",
     "eslint-config-love": "^89.0.1",

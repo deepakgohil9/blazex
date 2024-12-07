@@ -1,10 +1,19 @@
 import _ from 'lodash'
-import { OAuth2Client, TokenPayload } from 'google-auth-library'
+import { OAuth2Client, Credentials } from 'google-auth-library'
 import config from '../configs/config'
 
 const client = new OAuth2Client(_.omit(config.google, 'scopes'))
 
-export type GoogleUserData = Pick<TokenPayload, 'email' | 'email_verified' | 'name' | 'given_name' | 'family_name' | 'picture'>
+export type GoogleUser = {
+  sub: string
+  name: string
+  given_name: string
+  family_name: string
+  picture: string
+  email: string
+  email_verified: boolean
+}
+
 
 export const generateAuthUrl = (): string => {
   return client.generateAuthUrl({
@@ -13,20 +22,18 @@ export const generateAuthUrl = (): string => {
   })
 }
 
-export const getUserData = async (code: string): Promise<GoogleUserData | null> => {
-  try {
-    const { tokens } = await client.getToken(code)
-    client.setCredentials(tokens)
 
-    const ticket = await client.verifyIdToken({
-      idToken: tokens.id_token ?? '',
-      audience: config.google.clientId
-    })
+export const getToken = async (code: string): Promise<Credentials> => {
+  const response = await client.getToken(code)
+  return response.tokens
+}
 
-    const payload = ticket.getPayload()
-    return _.pick(payload, ['email', 'email_verified', 'name', 'given_name', 'family_name', 'picture'])
-  }
-  catch (error) {
-    return null
-  }
+
+export const getUser = async (tokens: Credentials): Promise<GoogleUser> => {
+  client.setCredentials(tokens)
+  const response = await client.request<GoogleUser>({
+    url: 'https://www.googleapis.com/oauth2/v3/userinfo'
+  })
+
+  return response.data
 }

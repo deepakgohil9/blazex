@@ -12,8 +12,6 @@ const envVarsSchema = z.object({
   JWT_ACCESS_PUBLIC_KEY: z.string(),
   JWT_ACCESS_PRIVATE_KEY: z.string(),
   JWT_ACCESS_EXPIRES_IN: z.string(),
-  JWT_REFRESH_PUBLIC_KEY: z.string(),
-  JWT_REFRESH_PRIVATE_KEY: z.string(),
   JWT_REFRESH_EXPIRES_IN: z.string(),
   GOOGLE_CLIENT_ID: z.string(),
   GOOGLE_CLIENT_SECRET: z.string(),
@@ -37,12 +35,8 @@ export default {
       privateKey: env.JWT_ACCESS_PRIVATE_KEY,
       expiresIn: env.JWT_ACCESS_EXPIRES_IN
     },
-    refresh: {
-      publicKey: env.JWT_REFRESH_PUBLIC_KEY,
-      privateKey: env.JWT_REFRESH_PRIVATE_KEY,
-      expiresIn: env.JWT_REFRESH_EXPIRES_IN
-    }
   },
+  refreshExpiresIn: env.JWT_REFRESH_EXPIRES_IN,
   google: {
     clientId: env.GOOGLE_CLIENT_ID,
     clientSecret: env.GOOGLE_CLIENT_SECRET,

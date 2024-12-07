@@ -1,6 +1,6 @@
 import z from 'zod'
 
-export const register = z.object({
+export const signUp = z.object({
   query: z.object({}).strict(),
   params: z.object({}).strict(),
   body: z.object({
@@ -14,15 +14,15 @@ export const register = z.object({
   }).strict(),
 })
 
-export const login = z.object({
+export const signIn = z.object({
   query: z.object({}).strict(),
   params: z.object({}).strict(),
   body: z.object({
     email: z
-      .string({ required_error: 'Field `email` is required for login, please provide a valid email address' })
+      .string({ required_error: 'Field `email` is required for SignIn, please provide a valid email address' })
       .email('Field `email` must be a valid email address, please provide a valid email address'),
     password: z
-      .string({ required_error: 'Field `password` is required for login, please provide the password for your account' })
+      .string({ required_error: 'Field `password` is required for SignIn, please provide the password for your account' })
       .min(6, 'Field `password` must be at least 6 characters long, please provide a longer password')
       .max(100, 'Field `password` must be at most 100 characters long, please provide a shorter password'),
   }).strict(),
@@ -37,6 +37,6 @@ export const googleCallback = z.object({
   body: z.object({}).strict(),
 })
 
-export type RegisterType = z.infer<typeof register>
-export type LoginType = z.infer<typeof login>
+export type SignUpType = z.infer<typeof signUp>
+export type SignInType = z.infer<typeof signIn>
 export type GoogleCallbackType = z.infer<typeof googleCallback>

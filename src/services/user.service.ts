@@ -1,32 +1,79 @@
-import _ from 'lodash'
-import { IUser, UserDoc, User } from '../models'
 import * as errors from '../utils/error'
+import { User, UserDoc } from '../models'
 
-export const createUser = async (data: Omit<IUser, 'signInMethod'>): Promise<Omit<UserDoc, 'password'>> => {
-  const existingUser = await User.findOne({ email: data.email })
+/* Type definitions */
 
-  if (existingUser) {
-    throw new errors.BadRequest({
-      title: 'Email already in use',
-      detail: 'The email address you have entered is already associated with another account. Please sign in or use a different email address.'
+
+/* Service functions */
+
+/**
+ * Create a new user if not exists with the provided email and return the user.
+ *
+ * @param email - Email of the user
+ * @returns User document
+ */
+export const createIfNotExists = async (email: string): Promise<UserDoc> => {
+  // Find an existing user with the same email
+  const user = await User.findOne(
+    { email },
+    { email: 1, emailVerified: 1 },
+    { lean: true }
+  )
+
+  // If user was found, return the user
+  if (user !== null) {
+    return user
+  }
+
+  // Create a new user with the email and return the user
+  const newUser = new User({ email, emailVerified: false })
+  await newUser.save()
+  return newUser.toObject()
+}
+
+
+/**
+ * Get the user with the provided userId.
+ *
+ * @param userId - User id
+ * @returns User document
+ * @throws {NotFoundError} - If user was not found with the provided userId
+ */
+export const getUserById = async (userId: UserDoc['_id']): Promise<UserDoc> => {
+  // Find the user with the userId
+  const user = await User.findById(userId, {} , { lean: true })
+
+  // If user was not found, throw an error
+  if (!user) {
+    throw new errors.NotFound({
+      title: 'User not found',
+      detail: 'User not found with the provided user id.'
     })
   }
 
-  const user = new User({ ...data, signInMethod: 'email' })
-  await user.save()
-
-  return _.omit(user.toObject<UserDoc>(), 'password')
+  return user
 }
 
-export const findOrCreateUser = async (data: IUser): Promise<Omit<UserDoc, 'password'>> => {
-  const existing = await User.findOne({ email: data.email })
 
-  if (existing) {
-    return _.omit(existing.toObject<UserDoc>(), 'password')
+/**
+ * Get the user with the provided email.
+ *
+ * @param email - Email of the user
+ * @returns User document
+ * @throws {NotFoundError} - If user was not found with the provided userId
+ */
+export const getUserByEmail = async (email: string): Promise<UserDoc> => {
+  // Find the user with the userId
+  const user = await User.findOne({email}, {}, { lean: true })
+
+  // If user was not found, throw an error
+  if (!user) {
+    throw new errors.NotFound({
+      title: 'User not found',
+      detail: 'User not found with the provided user id.'
+    })
   }
 
-  const user = new User({ ...data, signInMethod: 'google' })
-  await user.save()
-
-  return _.omit(user.toObject<UserDoc>(), 'password')
+  return user
 }
+
