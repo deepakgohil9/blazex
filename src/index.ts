@@ -16,6 +16,7 @@ const server = app.listen(config.port, () => {
     })
 })
 
+/** Gracefully shutdown the server and closes all connections with databases and other services */
 const exit = () => {
   server.close(() => {
     mongo.disconnect()
@@ -33,12 +34,13 @@ const exit = () => {
 process.on('SIGINT', exit)
 process.on('SIGTERM', exit)
 
-// handle unhandled promise rejections and uncaught exceptions
+// handle unhandled promise rejections
 process.on('unhandledRejection', (error: unknown) => {
   logger.error('Unhandled Rejection: ' + (error as Error).message)
   exit()
 })
 
+// handle uncaught exceptions
 process.on('uncaughtException', (error: unknown) => {
   logger.error('Uncaught Exception: ' + (error as Error).message)
   exit()

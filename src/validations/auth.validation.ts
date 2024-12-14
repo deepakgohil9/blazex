@@ -1,5 +1,6 @@
 import z from 'zod'
 
+
 export const signUp = z.object({
   query: z.object({}).strict(),
   params: z.object({}).strict(),
@@ -13,6 +14,8 @@ export const signUp = z.object({
       .max(100, 'Field `password` must be at most 100 characters long, please choose a shorter password'),
   }).strict(),
 })
+export type SignUpType = z.infer<typeof signUp>
+
 
 export const signIn = z.object({
   query: z.object({}).strict(),
@@ -27,6 +30,8 @@ export const signIn = z.object({
       .max(100, 'Field `password` must be at most 100 characters long, please provide a shorter password'),
   }).strict(),
 })
+export type SignInType = z.infer<typeof signIn>
+
 
 export const googleCallback = z.object({
   query: z.object({
@@ -36,7 +41,4 @@ export const googleCallback = z.object({
   params: z.object({}).strict(),
   body: z.object({}).strict(),
 })
-
-export type SignUpType = z.infer<typeof signUp>
-export type SignInType = z.infer<typeof signIn>
 export type GoogleCallbackType = z.infer<typeof googleCallback>

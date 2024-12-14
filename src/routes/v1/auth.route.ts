@@ -1,15 +1,15 @@
 import express from 'express'
-
 import validate from '../../middlewares/validate.middleware'
 import { authTypes, commonTypes } from '../../validations'
-import { authController } from '../../controllers'
+import controller from '../../controllers'
 
 
 const router = express.Router()
 
-router.post('/signup', validate(authTypes.signUp), authController.signUp)
-router.post('/signin', validate(authTypes.signIn), authController.signIn)
-router.get('/google', validate(commonTypes.empty), authController.googleSignIn)
-router.get('/google/callback', validate(authTypes.googleCallback), authController.googleCallback)
-router.get('/refresh-token', validate(commonTypes.empty), authController.refreshToken)
+router.post('/signup', validate(authTypes.signUp), controller.auth.signUp)
+router.post('/signin', validate(authTypes.signIn), controller.auth.signIn)
+router.get('/google', validate(commonTypes.empty), controller.auth.googleSignIn)
+router.get('/google/callback', validate(authTypes.googleCallback), controller.auth.googleCallback)
+router.get('/refresh-token', validate(commonTypes.empty), controller.auth.refreshToken)
+
 export default router

@@ -2,7 +2,7 @@ import mongoose from 'mongoose'
 
 export interface IAccount {
   userId: mongoose.Types.ObjectId
-  accountId: string
+  accountId: string // provider's account id
   provider: string
   accessToken?: string
   refreshToken?: string

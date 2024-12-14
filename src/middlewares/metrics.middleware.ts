@@ -1,8 +1,7 @@
 import client from 'prom-client'
 import responseTime from 'response-time'
 import { Request, Response } from 'express'
-
-import { normalizePath, normalizeStatusCode } from '../utils/normalizer'
+import normalizer from '../utils/normalizer'
 
 client.collectDefaultMetrics()
 
@@ -30,13 +29,15 @@ const meterics = {
   })
 }
 
+
+/** Middleware to instrument HTTP metrics */
 export const instrumentMiddleware = responseTime((req: Request, res: Response, time: number) => {
   const { method, originalUrl } = req
-  const route = normalizePath(originalUrl)
+  const route = normalizer.normalizePath(originalUrl)
 
   if (route === '/metrics') return
 
-  const status = normalizeStatusCode(res.statusCode)
+  const status = normalizer.normalizeStatusCode(res.statusCode)
   const labels = { method, route, status }
 
   meterics.httpRequestDuration.observe(labels, time)
@@ -53,6 +54,8 @@ export const instrumentMiddleware = responseTime((req: Request, res: Response, t
   }
 })
 
+
+/** Handler for metrics endpoint, exposes metrics in Prometheus format */
 export const metricsHandler = async (req: Request, res: Response) => {
   res.set('Content-Type', client.register.contentType)
   res.end(await client.register.metrics())

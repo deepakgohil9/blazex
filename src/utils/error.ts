@@ -1,4 +1,4 @@
-export class AppError extends Error {
+class AppError extends Error {
   type: string  	// A URI reference that identifies the problem type. The type field is used to identify the error type and provide a link to the documentation that describes the error in more detail
   title: string	// A short, human-readable summary of the problem type. It SHOULD NOT change from occurrence to occurrence of the problem, except for purposes of localization.
   status: number	// The HTTP status code applicable to this problem.
@@ -15,7 +15,7 @@ export class AppError extends Error {
   }
 }
 
-export class NotFound extends AppError {
+class NotFound extends AppError {
   constructor(data: { type?: string, title: string, code?: string, detail: string }) {
     super({
       type: data.type || 'https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/404',
@@ -27,7 +27,7 @@ export class NotFound extends AppError {
   }
 }
 
-export class ValidationError extends AppError {
+class ValidationError extends AppError {
   constructor(data: { type?: string, title: string, code?: string, detail: string }) {
     super({
       type: data.type || 'https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400',
@@ -39,7 +39,7 @@ export class ValidationError extends AppError {
   }
 }
 
-export class BadRequest extends AppError {
+class BadRequest extends AppError {
   constructor(data: { type?: string, title: string, code?: string, detail: string }) {
     super({
       type: data.type || 'https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400',
@@ -51,7 +51,7 @@ export class BadRequest extends AppError {
   }
 }
 
-export class Unauthorized extends AppError {
+class Unauthorized extends AppError {
   constructor(data: { type?: string, title: string, code?: string, detail: string }) {
     super({
       type: data.type || 'https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401',
@@ -63,7 +63,7 @@ export class Unauthorized extends AppError {
   }
 }
 
-export class PaymentRequired extends AppError {
+class PaymentRequired extends AppError {
   constructor(data: { type?: string, title: string, code?: string, detail: string }) {
     super({
       type: data.type || 'https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/402',
@@ -75,7 +75,7 @@ export class PaymentRequired extends AppError {
   }
 }
 
-export class Forbidden extends AppError {
+class Forbidden extends AppError {
   constructor(data: { type?: string, title: string, code?: string, detail: string }) {
     super({
       type: data.type || 'https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/403',
@@ -87,7 +87,7 @@ export class Forbidden extends AppError {
   }
 }
 
-export class Conflict extends AppError {
+class Conflict extends AppError {
   constructor(data: { type?: string, title: string, code?: string, detail: string }) {
     super({
       type: data.type || 'https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/409',
@@ -99,7 +99,7 @@ export class Conflict extends AppError {
   }
 }
 
-export class InternalServerError extends AppError {
+class InternalServerError extends AppError {
   constructor(data: { type?: string, title: string, code?: string, detail: string }) {
     super({
       type: data.type || 'https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/500',
@@ -111,7 +111,7 @@ export class InternalServerError extends AppError {
   }
 }
 
-export class NotImplemented extends AppError {
+class NotImplemented extends AppError {
   constructor(data: { type?: string, title: string, code?: string, detail: string }) {
     super({
       type: data.type || 'https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/501',
@@ -123,7 +123,7 @@ export class NotImplemented extends AppError {
   }
 }
 
-export class ServiceUnavailable extends AppError {
+class ServiceUnavailable extends AppError {
   constructor(data: { type?: string, title: string, code?: string, detail: string }) {
     super({
       type: data.type || 'https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/503',
@@ -133,4 +133,18 @@ export class ServiceUnavailable extends AppError {
       detail: data.detail,
     })
   }
+}
+
+export default {
+  AppError,
+  NotFound,
+  ValidationError,
+  BadRequest,
+  Unauthorized,
+  PaymentRequired,
+  Forbidden,
+  Conflict,
+  InternalServerError,
+  NotImplemented,
+  ServiceUnavailable,
 }

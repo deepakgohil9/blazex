@@ -1,18 +1,17 @@
 import asyncHandler, { Req, Res, Nxt } from '../utils/async-handler'
 import ApiResponse from '../utils/api-response'
-import * as errors from '../utils/error'
-
-import { googleAuth } from '../remotes'
+import errors from '../utils/error'
+import remotes from '../remotes'
 import { authTypes, commonTypes } from '../validations'
-import { userService, accountService, sessionService } from '../services'
+import services from '../services'
 
 
 export const signUp = asyncHandler(async (req: Req<authTypes.SignUpType>, res: Res, _next: Nxt) => {
   const { email, password } = req.body
 
-  const user = await userService.createIfNotExists(email)
+  const user = await services.user.createIfNotExists(email)
 
-  await accountService.setPassword({
+  await services.account.setPassword({
     userId: user._id,
     accountId: user._id.toString(),
     password,
@@ -25,9 +24,9 @@ export const signUp = asyncHandler(async (req: Req<authTypes.SignUpType>, res: R
 export const signIn = asyncHandler(async (req: Req<authTypes.SignInType>, res: Res, _next: Nxt) => {
   const { email, password } = req.body
 
-  const user = await userService.getUserByEmail(email)
+  const user = await services.user.getUserByEmail(email)
 
-  const isPasswordCorrect = await accountService.verifyPassword({
+  const isPasswordCorrect = await services.account.verifyPassword({
     userId: user._id,
     password,
   })
@@ -39,7 +38,7 @@ export const signIn = asyncHandler(async (req: Req<authTypes.SignInType>, res: R
     })
   }
 
-  const data = await sessionService.create({
+  const data = await services.session.create({
     userId: user._id,
     ipAddress: req.ip,
     userAgent: req.get('User-Agent')
@@ -50,7 +49,7 @@ export const signIn = asyncHandler(async (req: Req<authTypes.SignInType>, res: R
 
 
 export const googleSignIn = asyncHandler(async (req: Req<commonTypes.EmptyType>, res: Res, _next: Nxt) => {
-  const url = googleAuth.generateAuthUrl()
+  const url = remotes.google.generateAuthUrl()
   res.send(new ApiResponse(200, 'Google sign-in URL generated successfully', { url }))
 })
 
@@ -58,17 +57,17 @@ export const googleSignIn = asyncHandler(async (req: Req<commonTypes.EmptyType>,
 export const googleCallback = asyncHandler(async (req: Req<authTypes.GoogleCallbackType>, res: Res, _next: Nxt) => {
   const { code } = req.query
 
-  const tokens = await googleAuth.getToken(code)
-  const googleUser = await googleAuth.getUser(tokens)
+  const tokens = await remotes.google.getToken(code)
+  const googleUser = await remotes.google.getUser(tokens)
 
-  const user = await userService.createIfNotExists(googleUser.email)
-  await accountService.linkSocial({
+  const user = await services.user.createIfNotExists(googleUser.email)
+  await services.account.linkSocial({
     userId: user._id,
     accountId: googleUser.sub,
     provider: 'google',
   })
 
-  const data = await sessionService.create({
+  const data = await services.session.create({
     userId: user._id,
     ipAddress: req.ip,
     userAgent: req.get('User-Agent')
@@ -88,7 +87,7 @@ export const refreshToken = asyncHandler(async (req: Req<commonTypes.EmptyType>,
     })
   }
 
-  const accessToken = await sessionService.refreshAccessToken(token)
+  const accessToken = await services.session.refreshAccessToken(token)
 
   res.send(new ApiResponse(200, 'Access token refreshed successfully', { accessToken }))
 })

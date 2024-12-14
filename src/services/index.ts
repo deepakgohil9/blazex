@@ -1,3 +1,9 @@
-export * as userService from './user.service'
-export * as accountService from './account.service'
-export * as sessionService from './session.service'
+import * as user from './user.service'
+import * as account from './account.service'
+import * as session from './session.service'
+
+export default {
+  user,
+  account,
+  session
+}

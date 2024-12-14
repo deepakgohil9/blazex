@@ -3,10 +3,26 @@ import { AppError } from '../utils/error'
 import config from '../configs/config'
 import logger from '../configs/logger'
 
+/**
+ * Check if the error is an invalid JSON error
+ *
+ * @param error - The error to check
+ * @returns True if the error is an invalid JSON error, false otherwise
+ */
 const isInvalidJsonError = (error: Error) => {
   return error instanceof SyntaxError && 'body' in error && (error as Record<string, unknown>).status === 400
 }
 
+
+/**
+ * Error handler middleware. This middleware is global error handler for the express application.
+ * It sends the error response according to RFC 9457 (https://datatracker.ietf.org/doc/html/rfc9457)
+ *
+ * @param error - The error
+ * @param req - The request object
+ * @param res - The response object
+ * @param _next - The next middleware
+ */
 const errorHandler = (error: Error, req: Request, res: Response, _next: NextFunction) => {
   if (error instanceof AppError) {
     res.setHeader('Content-Type', 'application/problem+json')

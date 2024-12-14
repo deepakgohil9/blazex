@@ -1,7 +1,6 @@
 import type { Request, Response, NextFunction, RequestHandler } from 'express'
 import z from 'zod'
-
-import { ValidationError } from '../utils/error'
+import errors from '../utils/error'
 
 type baseType = z.ZodObject<{ body: z.AnyZodObject, params: z.AnyZodObject, query: z.AnyZodObject }>
 
@@ -18,7 +17,7 @@ const validate = <T extends baseType>(schema: T): RequestHandler => {
       req.query = data.query
       next()
     }).catch((error: unknown) => {
-      next(new ValidationError({
+      next(new errors.ValidationError({
         title: 'Invalid Request',
         detail: (error as z.ZodError).errors.map((error) => error.message).join(', ')
       }))

@@ -12,7 +12,7 @@ const envVarsSchema = z.object({
   JWT_ACCESS_PUBLIC_KEY: z.string(),
   JWT_ACCESS_PRIVATE_KEY: z.string(),
   JWT_ACCESS_EXPIRES_IN: z.string(),
-  JWT_REFRESH_EXPIRES_IN: z.string(),
+  REFRESH_EXPIRES_IN: z.string(),
   GOOGLE_CLIENT_ID: z.string(),
   GOOGLE_CLIENT_SECRET: z.string(),
   GOOGLE_REDIRECT_URI: z.string(),
@@ -29,14 +29,16 @@ export default {
     uri: env.MONGO_URI
   },
   authRedirectUrl: 'https://httpbin.org/get', // This is a dummy URL, replace it with your actual URL
-  jwt: {
+  token: {
     access: {
       publicKey: env.JWT_ACCESS_PUBLIC_KEY,
       privateKey: env.JWT_ACCESS_PRIVATE_KEY,
       expiresIn: env.JWT_ACCESS_EXPIRES_IN
     },
+    refresh: {
+      expiresIn: env.REFRESH_EXPIRES_IN
+    }
   },
-  refreshExpiresIn: env.JWT_REFRESH_EXPIRES_IN,
   google: {
     clientId: env.GOOGLE_CLIENT_ID,
     clientSecret: env.GOOGLE_CLIENT_SECRET,

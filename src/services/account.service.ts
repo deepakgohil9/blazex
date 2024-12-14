@@ -1,7 +1,6 @@
 import argon2 from 'argon2'
 import _ from 'lodash'
-
-import * as errors from '../utils/error'
+import errors from '../utils/error'
 import { Account, IAccount } from '../models'
 
 /* Type definitions */
@@ -29,7 +28,7 @@ export const setPassword = async (data: SetPasswordType): Promise<void> => {
   )
 
   // If account was found, throw an error as password is already set
-  if (!!account) {
+  if (account) {
     throw new errors.BadRequest({
       title: 'Account already exists',
       detail: 'Account already exists for this user. Please sign in instead.'
@@ -91,7 +90,7 @@ export const linkSocial = async (data: LinkSocialType): Promise<void> => {
   )
 
   // If account was found and updated, return
-  if (!!account) {
+  if (account) {
     return
   }
 

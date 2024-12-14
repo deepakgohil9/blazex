@@ -1,1 +1,5 @@
-export * as authController from './auth.controller'
+import * as auth from './auth.controller'
+
+export default {
+  auth
+}

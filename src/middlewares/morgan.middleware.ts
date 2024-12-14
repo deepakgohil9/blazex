@@ -1,5 +1,4 @@
 import morgan from 'morgan'
-
 import config from '../configs/config'
 import logger from '../configs/logger'
 

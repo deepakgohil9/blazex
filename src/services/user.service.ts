@@ -1,4 +1,4 @@
-import * as errors from '../utils/error'
+import errors from '../utils/error'
 import { User, UserDoc } from '../models'
 
 /* Type definitions */
@@ -21,7 +21,7 @@ export const createIfNotExists = async (email: string): Promise<UserDoc> => {
   )
 
   // If user was found, return the user
-  if (user !== null) {
+  if (user) {
     return user
   }
 

@@ -3,12 +3,26 @@ import UrlValueParser from 'url-value-parser'
 
 const parser = new UrlValueParser()
 
-export const normalizePath = (originalUrl: string, placeholder: string = '#val') => {
+/**
+ * Normalize the path by replacing the values with the placeholder
+ *
+ * @param originalUrl - the original URL
+ * @param placeholder - default is '#val'
+ * @returns the normalized path
+ */
+const normalizePath = (originalUrl: string, placeholder: string = '#val') => {
   const { pathname } = new URL(originalUrl, 'http://localhost')
   return parser.replacePathValues(pathname, placeholder)
 }
 
-export const normalizeStatusCode = (statusCode: number) => {
+
+/**
+ * Normalize the status code to a range
+ *
+ * @param statusCode - the status code
+ * @returns the normalized status code
+ */
+const normalizeStatusCode = (statusCode: number) => {
   if (statusCode >= 200 && statusCode < 300) {
     return '2xx'
   }
@@ -22,4 +36,9 @@ export const normalizeStatusCode = (statusCode: number) => {
   }
 
   return '5xx'
+}
+
+export default {
+  normalizePath,
+  normalizeStatusCode
 }

@@ -1,1 +1,5 @@
-export * as googleAuth from './google-auth.remote'
+import * as google from './google-auth.remote'
+
+export default{
+  google
+}

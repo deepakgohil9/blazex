@@ -15,6 +15,11 @@ export type GoogleUser = {
 }
 
 
+/**
+ * Generates the URL for Google OAuth2 authentication
+ *
+ * @returns The URL for Google OAuth2 authentication
+ */
 export const generateAuthUrl = (): string => {
   return client.generateAuthUrl({
     access_type: 'offline',
@@ -23,12 +28,24 @@ export const generateAuthUrl = (): string => {
 }
 
 
+/**
+ * Exchanges the code for Google OAuth2 tokens
+ *
+ * @param code The code received from Google OAuth2 authentication
+ * @returns The Google OAuth2 tokens
+ */
 export const getToken = async (code: string): Promise<Credentials> => {
   const response = await client.getToken(code)
   return response.tokens
 }
 
 
+/**
+ * Gets the user information from Google
+ *
+ * @param tokens The Google OAuth2 tokens
+ * @returns The user information
+ */
 export const getUser = async (tokens: Credentials): Promise<GoogleUser> => {
   client.setCredentials(tokens)
   const response = await client.request<GoogleUser>({

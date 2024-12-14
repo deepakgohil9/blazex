@@ -1,11 +1,10 @@
 import crypto from 'crypto'
 import jwt from 'jsonwebtoken'
 import ms from 'ms'
-
 import config from '../configs/config'
-import * as errors from '../utils/error'
+import errors from '../utils/error'
 import { Session, ISession, SessionDoc } from '../models'
-import { userService } from '../services'
+import services from '../services'
 
 /* Type definitions */
 type Token = {
@@ -45,19 +44,19 @@ export const deleteExpired = async (userId: ISession['userId']): Promise<void> =
  */
 export const generateAccessToken = async (userId: ISession['userId']): Promise<Token> => {
   // Finding the user by userId and preparing the payload
-  const user = await userService.getUserById(userId)
+  const user = await services.user.getUserById(userId)
   const payload: Payload = {
     userId: user._id.toString(),
     email: user.email
   }
 
   // Generating the access token
-  const accessToken = jwt.sign(payload, config.jwt.access.privateKey, {
-    expiresIn: config.jwt.access.expiresIn,
+  const accessToken = jwt.sign(payload, config.token.access.privateKey, {
+    expiresIn: config.token.access.expiresIn,
     algorithm: 'RS256'
   })
 
-  return { token: accessToken, expiresIn: ms(config.jwt.access.expiresIn) }
+  return { token: accessToken, expiresIn: ms(config.token.access.expiresIn) }
 }
 
 
@@ -80,14 +79,17 @@ export const create = async (data: CreateSessionType): Promise<SessionAndTokens>
   const session = new Session({
     ...data,
     token: refreshTokenHash,
-    expiresAt: new Date(Date.now() + ms(config.refreshExpiresIn)),
+    expiresAt: new Date(Date.now() + ms(config.token.refresh.expiresIn)),
   })
   await session.save()
 
   return {
     session: session.toObject(),
     accessToken,
-    refreshToken: { token: refreshToken, expiresIn: ms(config.refreshExpiresIn) }
+    refreshToken: {
+      token: refreshToken,
+      expiresIn: session.expiresAt.getTime() - Date.now()
+    }
   }
 }
 
