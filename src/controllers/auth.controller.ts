@@ -48,7 +48,7 @@ export const signIn = asyncHandler(async (req: Req<authTypes.SignInType>, res: R
 })
 
 
-export const googleSignIn = asyncHandler(async (req: Req<commonTypes.EmptyType>, res: Res, _next: Nxt) => {
+export const googleSignIn = asyncHandler((req: Req<commonTypes.EmptyType>, res: Res, _next: Nxt) => {
   const url = remotes.google.generateAuthUrl()
   res.send(new ApiResponse(200, 'Google sign-in URL generated successfully', { url }))
 })

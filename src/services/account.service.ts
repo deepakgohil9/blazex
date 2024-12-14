@@ -71,7 +71,7 @@ export const verifyPassword = async (data: VerifyPasswordType): Promise<boolean>
   }
 
   // Verify the password and return the result
-  return argon2.verify(account.password!, data.password)
+  return argon2.verify(account.password || '', data.password)
 }
 
 

@@ -1,5 +1,5 @@
 import type { Request, Response, NextFunction } from 'express'
-import { AppError } from '../utils/error'
+import errors from '../utils/error'
 import config from '../configs/config'
 import logger from '../configs/logger'
 
@@ -24,7 +24,7 @@ const isInvalidJsonError = (error: Error) => {
  * @param _next - The next middleware
  */
 const errorHandler = (error: Error, req: Request, res: Response, _next: NextFunction) => {
-  if (error instanceof AppError) {
+  if (error instanceof errors.AppError) {
     res.setHeader('Content-Type', 'application/problem+json')
     res.status(error.status).send({
       type: error.type,
