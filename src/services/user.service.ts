@@ -1,5 +1,5 @@
 import errors from '../utils/error'
-import { User, UserDoc } from '../models'
+import { User, UserDoc, IUser } from '../models'
 
 /* Type definitions */
 
@@ -39,9 +39,9 @@ export const createIfNotExists = async (email: string): Promise<UserDoc> => {
  * @returns User document
  * @throws {NotFoundError} - If user was not found with the provided userId
  */
-export const getUserById = async (userId: UserDoc['_id']): Promise<UserDoc> => {
+export const getUserById = async (userId: UserDoc['_id'] | string): Promise<UserDoc> => {
   // Find the user with the userId
-  const user = await User.findById(userId, {} , { lean: true })
+  const user = await User.findById(userId, {}, { lean: true })
 
   // If user was not found, throw an error
   if (!user) {
@@ -64,7 +64,7 @@ export const getUserById = async (userId: UserDoc['_id']): Promise<UserDoc> => {
  */
 export const getUserByEmail = async (email: string): Promise<UserDoc> => {
   // Find the user with the userId
-  const user = await User.findOne({email}, {}, { lean: true })
+  const user = await User.findOne({ email }, {}, { lean: true })
 
   // If user was not found, throw an error
   if (!user) {
@@ -77,3 +77,30 @@ export const getUserByEmail = async (email: string): Promise<UserDoc> => {
   return user
 }
 
+
+/**
+ *  Update the user with the provided userId and return the updated user.
+ *
+ * @param userId - User id
+ * @param updateData - Updated user data
+ * @returns Updated user document
+ * @throws {NotFoundError} - If user was not found with the provided userId
+ */
+export const updateUser = async (userId: UserDoc['_id'] | string, updateData: Omit<IUser, 'email' | 'emailVerified'>): Promise<UserDoc> => {
+  // Find the user with the userId and update the user
+  const user = await User.findByIdAndUpdate(
+    userId,
+    updateData,
+    { new: true, lean: true }
+  )
+
+  // If user was not found, throw an error
+  if (!user) {
+    throw new errors.NotFound({
+      title: 'User not found',
+      detail: 'User not found with the provided user id.'
+    })
+  }
+
+  return user
+}

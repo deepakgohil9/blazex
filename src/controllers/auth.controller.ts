@@ -26,6 +26,13 @@ export const signIn = asyncHandler(async (req: Req<authTypes.SignInType>, res: R
 
   const user = await services.user.getUserByEmail(email)
 
+  if(!user.emailVerified){
+    throw new errors.Forbidden({
+      title: 'Email not verified',
+      detail: 'Please verify your email before signing in.'
+    })
+  }
+
   const isPasswordCorrect = await services.account.verifyPassword({
     userId: user._id,
     password,
@@ -61,6 +68,14 @@ export const googleCallback = asyncHandler(async (req: Req<authTypes.GoogleCallb
   const googleUser = await remotes.google.getUser(tokens)
 
   const user = await services.user.createIfNotExists(googleUser.email)
+
+  if (!user.emailVerified) {
+    throw new errors.Forbidden({
+      title: 'Email not verified',
+      detail: 'Please verify your email before signing in.'
+    })
+  }
+  
   await services.account.linkSocial({
     userId: user._id,
     accountId: googleUser.sub,
