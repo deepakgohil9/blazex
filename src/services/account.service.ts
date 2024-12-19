@@ -8,6 +8,7 @@ import { Account, IAccount } from '../models'
 type SetPasswordType = Required<Pick<IAccount, 'userId' | 'accountId' | 'password'>>
 type VerifyPasswordType = Required<Pick<IAccount, 'userId' | 'password'>>
 type LinkSocialType = Omit<IAccount, 'password'>
+type UpdatePasswordType = Required<Pick<IAccount, 'userId' | 'password'>> & { newPassword: string }
 
 
 /* Service functions */
@@ -20,7 +21,7 @@ type LinkSocialType = Omit<IAccount, 'password'>
  * @throws {BadRequest} - If account already has a password set
  */
 export const setPassword = async (data: SetPasswordType): Promise<void> => {
-  // Find an existing account with the same userId and provider
+  // Find an existing account with the given userId and 'password' as provider
   const account = await Account.findOne(
     { userId: data.userId, provider: 'password' },
     { userId: 1 },
@@ -54,7 +55,7 @@ export const setPassword = async (data: SetPasswordType): Promise<void> => {
   * @throws {BadRequest} - If password is not set for the account
   */
 export const verifyPassword = async (data: VerifyPasswordType): Promise<boolean> => {
-  // Find an existing account with the same userId and provider
+  // Find an existing account with the given userId and 'password' as provider
   const account = await Account.findOne(
     { userId: data.userId, provider: 'password' },
     { password: 1 },
@@ -99,3 +100,36 @@ export const linkSocial = async (data: LinkSocialType): Promise<void> => {
   await newAccount.save()
 }
 
+
+/**
+ * Updates the password after verifying the current password.
+ *
+ * @param data - Data required to update the password
+ * @returns Promise that resolves to void when the operation is complete
+ * @throws {NotFound} - If password account is not found
+ * @throws {Unauthorized} - If the password is incorrect
+ */
+export const updatePassword = async (data: UpdatePasswordType): Promise<void> => {
+  // Find an existing account with the given userId and 'password' as provider
+  const account = await Account.findOne({ userId: data.userId, provider: 'password' })
+
+  // If account was not found, throw an error
+  if (!account) {
+    throw new errors.NotFound({
+      title: 'Account not Found',
+      detail: 'No password has been set for this account, Please set up a password for this account.'
+    })
+  }
+
+  // Verify the password and throw an error if it is incorrect
+  if (!await argon2.verify(account.password || '', data.password)) {
+    throw new errors.Unauthorized({
+      title: 'Invalid credentials',
+      detail: 'Incorrect Password'
+    })
+  }
+
+  // Hash the new password and update the account
+  account.password = await argon2.hash(data.newPassword)
+  await account.save()
+}

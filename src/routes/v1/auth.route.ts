@@ -1,5 +1,6 @@
 import express from 'express'
 import validate from '../../middlewares/validate.middleware'
+import auth from '../../middlewares/auth.middleware'
 import { authTypes, commonTypes } from '../../validations'
 import controller from '../../controllers'
 
@@ -11,5 +12,9 @@ router.post('/signin', validate(authTypes.signIn), controller.auth.signIn)
 router.get('/google', validate(commonTypes.empty), controller.auth.googleSignIn)
 router.get('/google/callback', validate(authTypes.googleCallback), controller.auth.googleCallback)
 router.get('/refresh-token', validate(commonTypes.empty), controller.auth.refreshToken)
+
+router.use(auth)
+
+router.post('/change-password', validate(authTypes.changePassword), controller.auth.changePassword)
 
 export default router

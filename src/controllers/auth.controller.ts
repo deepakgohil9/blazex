@@ -3,6 +3,7 @@ import ApiResponse from '../utils/api-response'
 import errors from '../utils/error'
 import remotes from '../remotes'
 import { authTypes, commonTypes } from '../validations'
+import { Locals } from '../utils/locals'
 import services from '../services'
 
 
@@ -26,7 +27,7 @@ export const signIn = asyncHandler(async (req: Req<authTypes.SignInType>, res: R
 
   const user = await services.user.getUserByEmail(email)
 
-  if(!user.emailVerified){
+  if (!user.emailVerified) {
     throw new errors.Forbidden({
       title: 'Email not verified',
       detail: 'Please verify your email before signing in.'
@@ -75,7 +76,7 @@ export const googleCallback = asyncHandler(async (req: Req<authTypes.GoogleCallb
       detail: 'Please verify your email before signing in.'
     })
   }
-  
+
   await services.account.linkSocial({
     userId: user._id,
     accountId: googleUser.sub,
@@ -105,4 +106,11 @@ export const refreshToken = asyncHandler(async (req: Req<commonTypes.EmptyType>,
   const accessToken = await services.session.refreshAccessToken(token)
 
   res.send(new ApiResponse(200, 'Access token refreshed successfully', { accessToken }))
+})
+
+
+export const changePassword = asyncHandler(async (req: Req<authTypes.ChangePasswordType>, res: Res<Locals>, _next: Nxt) => {
+  await services.account.updatePassword({ userId: res.locals.user.userId, ...req.body })
+
+  res.send(new ApiResponse(200, 'Password changed successfully'))
 })

@@ -39,7 +39,7 @@ export const createIfNotExists = async (email: string): Promise<UserDoc> => {
  * @returns User document
  * @throws {NotFoundError} - If user was not found with the provided userId
  */
-export const getUserById = async (userId: UserDoc['_id'] | string): Promise<UserDoc> => {
+export const getUserById = async (userId: UserDoc['_id']): Promise<UserDoc> => {
   // Find the user with the userId
   const user = await User.findById(userId, {}, { lean: true })
 
@@ -86,7 +86,7 @@ export const getUserByEmail = async (email: string): Promise<UserDoc> => {
  * @returns Updated user document
  * @throws {NotFoundError} - If user was not found with the provided userId
  */
-export const updateUser = async (userId: UserDoc['_id'] | string, updateData: Omit<IUser, 'email' | 'emailVerified'>): Promise<UserDoc> => {
+export const updateUser = async (userId: UserDoc['_id'], updateData: Omit<IUser, 'email' | 'emailVerified'>): Promise<UserDoc> => {
   // Find the user with the userId and update the user
   const user = await User.findByIdAndUpdate(
     userId,

@@ -42,3 +42,20 @@ export const googleCallback = z.object({
   body: z.object({}).strict(),
 })
 export type GoogleCallbackType = z.infer<typeof googleCallback>
+
+
+export const changePassword = z.object({
+  query: z.object({}).strict(),
+  params: z.object({}).strict(),
+  body: z.object({
+    password: z
+      .string({ required_error: 'Field `password` is required to change password, please provide your current password' })
+      .min(6, 'Field `password` must be at least 6 characters long, please provide a longer password')
+      .max(100, 'Field `password` must be at most 100 characters long, please provide a shorter password'),
+    newPassword: z
+      .string({ required_error: 'Field `newPassword` is required to change password, please choose a new password' })
+      .min(6, 'Field `newPassword` must be at least 6 characters long, please choose a longer password')
+      .max(100, 'Field `newPassword` must be at most 100 characters long, please choose a shorter password'),
+  }).strict(),
+})
+export type ChangePasswordType = z.infer<typeof changePassword>
