@@ -33,15 +33,22 @@ export const signIn = z.object({
 export type SignInType = z.infer<typeof signIn>
 
 
-export const googleCallback = z.object({
-  query: z.object({
+export const socialSignin = z.object({
+  query: z.object({}).strict(),
+  params: z.object({
+    provider: z
+      .enum(['google'], { required_error: 'Field `provider` is required for social signin, please provide the provider' })
+  }).strict(),
+  body: z.object({
     code: z
-      .string({ required_error: 'Field `code` is required for google callback.' })
-  }),
-  params: z.object({}).strict(),
-  body: z.object({}).strict(),
+      .string({ required_error: 'Field `code` is required for social signin, please provide the code' }),
+    codeVerifier: z
+      .string({ required_error: 'Field `code_verifier` is required for social signin, please provide the code_verifier' })
+      .min(43, 'Field `code_verifier` must be at least 43 characters long, please provide a longer code_verifier')
+      .max(128, 'Field `code_verifier` must be at most 128 characters long, please provide a shorter code_verifier'),
+  }).strict(),
 })
-export type GoogleCallbackType = z.infer<typeof googleCallback>
+export type SocialSigninType = z.infer<typeof socialSignin>
 
 
 export const changePassword = z.object({

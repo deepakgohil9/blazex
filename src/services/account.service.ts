@@ -66,8 +66,7 @@ export const verifyPassword = async (data: VerifyPasswordType): Promise<boolean>
   if (!account) {
     throw new errors.BadRequest({
       title: 'Password not set',
-      detail: 'Password is not set for this user. Please use social signin \
-      which you used to sign up or set a password.'
+      detail: 'Password is not set for this user. Please use social signin which you used to sign up or set a password.'
     })
   }
 

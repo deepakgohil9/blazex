@@ -1,5 +1,5 @@
-import * as google from './google-auth.remote'
+import oidc from './oidc.remote'
 
 export default{
-  google
+  oidc
 }

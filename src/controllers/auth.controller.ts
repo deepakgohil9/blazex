@@ -10,7 +10,7 @@ import services from '../services'
 export const signUp = asyncHandler(async (req: Req<authTypes.SignUpType>, res: Res, _next: Nxt) => {
   const { email, password } = req.body
 
-  const user = await services.user.createIfNotExists(email)
+  const user = await services.user.createIfNotExists({ email })
 
   await services.account.setPassword({
     userId: user._id,
@@ -56,19 +56,15 @@ export const signIn = asyncHandler(async (req: Req<authTypes.SignInType>, res: R
 })
 
 
-export const googleSignIn = asyncHandler((req: Req<commonTypes.EmptyType>, res: Res, _next: Nxt) => {
-  const url = remotes.google.generateAuthUrl()
-  res.send(new ApiResponse(200, 'Google sign-in URL generated successfully', { url }))
-})
+export const socialSignIn = asyncHandler(async (req: Req<authTypes.SocialSigninType>, res: Res, _next: Nxt) => {
+  const provider = req.params.provider
 
-
-export const googleCallback = asyncHandler(async (req: Req<authTypes.GoogleCallbackType>, res: Res, _next: Nxt) => {
-  const { code } = req.query
-
-  const tokens = await remotes.google.getToken(code)
-  const googleUser = await remotes.google.getUser(tokens)
-
-  const user = await services.user.createIfNotExists(googleUser.email)
+  const identity = await remotes.oidc[provider](req.body)
+  const user = await services.user.createIfNotExists({
+    name: identity.name,
+    email: identity.email,
+    image: identity.image
+  })
 
   if (!user.emailVerified) {
     throw new errors.Forbidden({
@@ -79,8 +75,8 @@ export const googleCallback = asyncHandler(async (req: Req<authTypes.GoogleCallb
 
   await services.account.linkSocial({
     userId: user._id,
-    accountId: googleUser.sub,
-    provider: 'google',
+    accountId: identity.accountId,
+    provider: provider,
   })
 
   const data = await services.session.create({
