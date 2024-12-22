@@ -7,16 +7,20 @@ import { Session, ISession, SessionDoc } from '../models'
 import services from '../services'
 
 /* Type definitions */
-type Token = {
+interface Token {
   token: string
   expiresIn: number
 }
-type Payload = {
+interface Payload {
   userId: string
   email: string
 }
 type CreateSessionType = Pick<ISession, 'userId' | 'ipAddress' | 'userAgent'>
-type SessionAndTokens = { session: SessionDoc, accessToken: Token, refreshToken: Token }
+interface SessionAndTokens {
+  session: SessionDoc,
+  accessToken: Token,
+  refreshToken: Token
+}
 
 
 

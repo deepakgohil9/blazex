@@ -18,10 +18,10 @@ class AppError extends Error {
 class NotFound extends AppError {
   constructor(data: { type?: string, title: string, code?: string, detail: string }) {
     super({
-      type: data.type || 'https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/404',
+      type: data.type ?? 'https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/404',
       title: data.title,
       status: 404,
-      code: data.code || 'not_found',
+      code: data.code ?? 'not_found',
       detail: data.detail,
     })
   }
@@ -30,10 +30,10 @@ class NotFound extends AppError {
 class ValidationError extends AppError {
   constructor(data: { type?: string, title: string, code?: string, detail: string }) {
     super({
-      type: data.type || 'https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400',
+      type: data.type ?? 'https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400',
       title: data.title,
       status: 400,
-      code: data.code || 'validation_error',
+      code: data.code ?? 'validation_error',
       detail: data.detail,
     })
   }
@@ -42,10 +42,10 @@ class ValidationError extends AppError {
 class BadRequest extends AppError {
   constructor(data: { type?: string, title: string, code?: string, detail: string }) {
     super({
-      type: data.type || 'https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400',
+      type: data.type ?? 'https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400',
       title: data.title,
       status: 400,
-      code: data.code || 'bad_request',
+      code: data.code ?? 'bad_request',
       detail: data.detail,
     })
   }
@@ -54,10 +54,10 @@ class BadRequest extends AppError {
 class Unauthorized extends AppError {
   constructor(data: { type?: string, title: string, code?: string, detail: string }) {
     super({
-      type: data.type || 'https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401',
+      type: data.type ?? 'https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401',
       title: data.title,
       status: 401,
-      code: data.code || 'unauthorized',
+      code: data.code ?? 'unauthorized',
       detail: data.detail,
     })
   }
@@ -66,10 +66,10 @@ class Unauthorized extends AppError {
 class PaymentRequired extends AppError {
   constructor(data: { type?: string, title: string, code?: string, detail: string }) {
     super({
-      type: data.type || 'https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/402',
+      type: data.type ?? 'https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/402',
       title: data.title,
       status: 402,
-      code: data.code || 'payment_required',
+      code: data.code ?? 'payment_required',
       detail: data.detail,
     })
   }
@@ -78,10 +78,10 @@ class PaymentRequired extends AppError {
 class Forbidden extends AppError {
   constructor(data: { type?: string, title: string, code?: string, detail: string }) {
     super({
-      type: data.type || 'https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/403',
+      type: data.type ?? 'https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/403',
       title: data.title,
       status: 403,
-      code: data.code || 'forbidden',
+      code: data.code ?? 'forbidden',
       detail: data.detail,
     })
   }
@@ -90,10 +90,10 @@ class Forbidden extends AppError {
 class Conflict extends AppError {
   constructor(data: { type?: string, title: string, code?: string, detail: string }) {
     super({
-      type: data.type || 'https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/409',
+      type: data.type ?? 'https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/409',
       title: data.title,
       status: 409,
-      code: data.code || 'conflict',
+      code: data.code ?? 'conflict',
       detail: data.detail,
     })
   }
@@ -102,10 +102,10 @@ class Conflict extends AppError {
 class InternalServerError extends AppError {
   constructor(data: { type?: string, title: string, code?: string, detail: string }) {
     super({
-      type: data.type || 'https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/500',
+      type: data.type ?? 'https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/500',
       title: data.title,
       status: 500,
-      code: data.code || 'internal_server_error',
+      code: data.code ?? 'internal_server_error',
       detail: data.detail,
     })
   }
@@ -114,10 +114,10 @@ class InternalServerError extends AppError {
 class NotImplemented extends AppError {
   constructor(data: { type?: string, title: string, code?: string, detail: string }) {
     super({
-      type: data.type || 'https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/501',
+      type: data.type ?? 'https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/501',
       title: data.title,
       status: 501,
-      code: data.code || 'not_implemented',
+      code: data.code ?? 'not_implemented',
       detail: data.detail,
     })
   }
@@ -126,10 +126,10 @@ class NotImplemented extends AppError {
 class ServiceUnavailable extends AppError {
   constructor(data: { type?: string, title: string, code?: string, detail: string }) {
     super({
-      type: data.type || 'https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/503',
+      type: data.type ?? 'https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/503',
       title: data.title,
       status: 503,
-      code: data.code || 'service_unavailable',
+      code: data.code ?? 'service_unavailable',
       detail: data.detail,
     })
   }

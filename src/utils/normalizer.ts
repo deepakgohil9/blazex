@@ -10,7 +10,7 @@ const parser = new UrlValueParser()
  * @param placeholder - default is '#val'
  * @returns the normalized path
  */
-const normalizePath = (originalUrl: string, placeholder: string = '#val') => {
+const normalizePath = (originalUrl: string, placeholder = '#val') => {
   const { pathname } = new URL(originalUrl, 'http://localhost')
   return parser.replacePathValues(pathname, placeholder)
 }

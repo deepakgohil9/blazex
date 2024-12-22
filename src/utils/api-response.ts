@@ -14,7 +14,7 @@ class ApiResponse<T> {
   constructor(
 		public status: number,
 		public message: string,
-		public data: Partial<T> | Array<Partial<T>> = {}) {
+		public data: Partial<T> | Partial<T>[] = {}) {
     this.status = status
     this.message = message
     this.data = data
