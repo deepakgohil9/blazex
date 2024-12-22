@@ -66,3 +66,16 @@ export const changePassword = z.object({
   }).strict(),
 })
 export type ChangePasswordType = z.infer<typeof changePassword>
+
+
+export const signOut = z.object({
+  query: z.object({}).strict(),
+  params: z.object({
+    sessionId: z
+      .string({ required_error: 'Field `sessionId` is required to sign out, please provide the session id' })
+      .min(24, 'Field `sessionId` must be at least 24 characters long, please provide a longer session id')
+      .max(24, 'Field `sessionId` must be at most 24 characters long, please provide a shorter session id')
+  }).strict(),
+  body: z.object({}).strict(),
+})
+export type SignOutType = z.infer<typeof signOut>

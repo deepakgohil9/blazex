@@ -132,7 +132,7 @@ export const refreshAccessToken = async (refreshToken: string): Promise<Token> =
  * @param userId - User id
  * @returns Promise that resolves to the sessions
  */
-export const getSessions = async (userId: ISession['userId']): Promise<SessionDoc[]> => {
+export const getSessions = async (userId: ISession['userId']): Promise<Omit<SessionDoc, 'token'>[]> => {
   // Delete all expired sessions
   await deleteExpired(userId)
 
@@ -143,16 +143,26 @@ export const getSessions = async (userId: ISession['userId']): Promise<SessionDo
 
 
 /**
- * Revoke the session with the provided refresh token.
+ * Revoke the session with the provided id and userId
  *
- * @param userId - User id
- * @param refreshToken - Refresh token
- * @returns Promise that resolves to void when the operation is complete
+ * @param data - Session data containing the id and userId
+ * @returns Promise that resolves to the revoked session
+ * @throws {NotFound} - If session was not found
  */
-export const revokeSession = async (userId: ISession['userId'], refreshToken: string): Promise<void> => {
-  // Delete the session with the refresh token hash
-  await Session.deleteOne({
-    userId,
-    token: crypto.createHash('sha256').update(refreshToken).digest('hex')
-  })
+export const revokeSession = async (data: Pick<SessionDoc, '_id' | 'userId'>): Promise<SessionDoc> => {
+  // Delete all expired sessions
+  await deleteExpired(data.userId)
+
+  // Delete the session with the provided id and userId
+  const session = await Session.findOneAndDelete(data, { lean: true })
+
+  // If session was not found, throw an error
+  if (!session) {
+    throw new errors.NotFound({
+      title: 'Session not found',
+      detail: 'Session not found or has expired.'
+    })
+  }
+
+  return session
 }

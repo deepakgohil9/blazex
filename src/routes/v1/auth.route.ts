@@ -15,5 +15,7 @@ router.get('/refresh-token', validate(commonTypes.empty), controller.auth.refres
 router.use(auth)
 
 router.post('/change-password', validate(authTypes.changePassword), controller.auth.changePassword)
+router.get('/sessions', validate(commonTypes.empty), controller.auth.listSessions)
+router.delete('/sessions/:sessionId', validate(authTypes.signOut), controller.auth.signOut)
 
 export default router

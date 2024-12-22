@@ -1,9 +1,11 @@
+import _ from 'lodash'
 import asyncHandler, { Req, Res, Nxt } from '../utils/async-handler'
 import ApiResponse from '../utils/api-response'
 import errors from '../utils/error'
 import remotes from '../remotes'
 import { authTypes, commonTypes } from '../validations'
 import { Locals } from '../utils/locals'
+import toObjectId from '../utils/toObjectId'
 import services from '../services'
 
 
@@ -109,4 +111,21 @@ export const changePassword = asyncHandler(async (req: Req<authTypes.ChangePassw
   await services.account.updatePassword({ userId: res.locals.user.userId, ...req.body })
 
   res.send(new ApiResponse(200, 'Password changed successfully'))
+})
+
+
+export const listSessions = asyncHandler(async (req: Req<commonTypes.EmptyType>, res: Res<Locals>, _next: Nxt) => {
+  const sessions = await services.session.getSessions(res.locals.user.userId)
+  res.send(new ApiResponse(200, 'Sessions fetched successfully', sessions))
+})
+
+
+export const signOut = asyncHandler(async (req: Req<authTypes.SignOutType>, res: Res<Locals>, _next: Nxt) => {
+  const session = await services.session.revokeSession({
+    _id: toObjectId(req.params.sessionId),
+    userId: res.locals.user.userId
+  })
+
+  const data = _.omit(session, 'token')
+  res.send(new ApiResponse(200, 'User signed out successfully', data))
 })
