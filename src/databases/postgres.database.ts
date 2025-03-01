@@ -7,7 +7,10 @@ const pool = new pg.Pool({
 })
 
 /** Create a new instance of the database */
-export const db = drizzle(pool)
+export const db = drizzle({
+  client: pool,
+  casing: 'snake_case'
+})
 
 /** Disconnect from Postgres database */
 export const disconnect = async () => {
