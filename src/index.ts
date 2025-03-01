@@ -1,27 +1,20 @@
 import 'dotenv/config'
 import app from './app'
 import config from './configs/config'
-import mongo from './databases/mongo.database'
+import * as postgres from './databases/postgres.database'
 import logger from './configs/logger'
 
 // start the server
 const server = app.listen(config.port, () => {
   logger.info(`⚙️ Environment: ${config.env}`)
-  mongo.connect()
-    .then(() => logger.info('📦 Connected to MongoDB!'))
-    .then(() => logger.info(`🎉 Server listening on port: ${config.port.toString()}`))
-    .catch((error: unknown) => {
-      logger.error('Error occurred while instantiating the app!' + (error as Error).message)
-      process.exit(1)
-    })
 })
 
 /** Gracefully shutdown the server and closes all connections with databases and other services */
 const exit = () => {
   server.close(() => {
-    mongo.disconnect()
+    postgres.disconnect()
       .then(() => logger.info('✓ Server stopped successfully!'))
-      .then(() => logger.info('✓ MongoDB connection closed successfully!'))
+      .then(() => logger.info('✓ Postgres connection closed successfully!'))
       .then(() => process.exit(0))
       .catch((error: unknown) => {
         logger.error('Error occurred while stopping the app!' + (error as Error).message)

@@ -8,7 +8,7 @@ const envVarsSchema = z.object({
   ]).default('development'),
   PORT: z.number().default(3000),
   CORS_ORIGIN: z.string().default('*'),
-  MONGO_URI: z.string(),
+  POSTGRES_URI: z.string(),
   JWT_ACCESS_PUBLIC_KEY: z.string(),
   JWT_ACCESS_PRIVATE_KEY: z.string(),
   JWT_ACCESS_EXPIRES_IN: z.string(),
@@ -25,8 +25,8 @@ export default {
   port: env.PORT,
   corsOrigin: env.CORS_ORIGIN,
   logDir: 'logs',
-  mongo: {
-    uri: env.MONGO_URI
+  postgres: {
+    uri: env.POSTGRES_URI
   },
   authRedirectUrl: 'https://httpbin.org/get', // This is a dummy URL, replace it with your actual URL
   token: {
