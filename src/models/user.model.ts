@@ -1,23 +1,15 @@
-import mongoose from 'mongoose'
+import { pgTable, uuid, varchar, boolean, timestamp } from 'drizzle-orm/pg-core'
+import { type InferSelectModel, type InferInsertModel } from 'drizzle-orm'
 
-export interface IUser {
-  name?: string
-  email: string
-  emailVerified: boolean
-  image?: string
-}
+export const users = pgTable('users', {
+  id: uuid().defaultRandom().primaryKey().notNull(),
+  name: varchar().notNull(),
+  email: varchar().unique().notNull(),
+  emailVerified: boolean().default(false).notNull(),
+  image: varchar().notNull(),
+  createdAt: timestamp({ mode: 'date' }).defaultNow().notNull(),
+  updatedAt: timestamp({ mode: 'date' }).$onUpdate(() => new Date()).notNull()
+})
 
-export interface UserDoc extends IUser {
-  _id: mongoose.Types.ObjectId
-  createdAt: Date
-  updatedAt: Date
-}
-
-const userSchema = new mongoose.Schema<UserDoc>({
-  name: { type: String },
-  email: { type: String, required: true, unique: true },
-  emailVerified: { type: Boolean, required: true, default: false },
-  image: { type: String},
-}, { timestamps: true })
-
-export const User = mongoose.model<UserDoc>('User', userSchema)
+export type User = Omit<InferInsertModel<typeof users>, 'id' | 'createdAt' | 'updatedAt'>
+export type UserRow = InferSelectModel<typeof users>

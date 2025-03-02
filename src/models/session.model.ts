@@ -1,25 +1,17 @@
-import mongoose from 'mongoose'
+import { users } from '../models'
+import { pgTable, uuid, varchar, timestamp } from 'drizzle-orm/pg-core'
+import { type InferSelectModel, type InferInsertModel } from 'drizzle-orm'
 
-export interface ISession {
-  userId: mongoose.Types.ObjectId
-  token: string
-  expiresAt: Date
-  ipAddress?: string
-  userAgent?: string
-}
+export const sessions = pgTable('sessions', {
+  id: uuid().defaultRandom().primaryKey().notNull(),
+  userId: uuid().references(() => users.id).notNull(),
+  token: varchar().unique().notNull(),
+  expiresAt: timestamp({ mode: 'date' }).notNull(),
+  ipAddress: varchar(),
+  userAgent: varchar(),
+  createdAt: timestamp({ mode: 'date' }).defaultNow().notNull(),
+  updatedAt: timestamp({ mode: 'date' }).$onUpdate(() => new Date()).notNull()
+})
 
-export interface SessionDoc extends ISession {
-  _id: mongoose.Types.ObjectId
-  createdAt: Date
-  updatedAt: Date
-}
-
-const sessionSchema = new mongoose.Schema<SessionDoc>({
-  userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
-  token: { type: String, required: true },
-  expiresAt: { type: Date, required: true },
-  ipAddress: { type: String },
-  userAgent: { type: String },
-}, { timestamps: true })
-
-export const Session = mongoose.model<SessionDoc>('Session', sessionSchema)
+export type Session = Omit<InferInsertModel<typeof sessions>, 'id' | 'createdAt' | 'updatedAt'>
+export type SessionRow = InferSelectModel<typeof sessions>

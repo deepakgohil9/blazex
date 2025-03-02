@@ -1,4 +1,5 @@
 import z from 'zod'
+import ms from 'ms'
 
 const envVarsSchema = z.object({
   NODE_ENV: z.enum([
@@ -33,10 +34,10 @@ export default {
     access: {
       publicKey: env.JWT_ACCESS_PUBLIC_KEY,
       privateKey: env.JWT_ACCESS_PRIVATE_KEY,
-      expiresIn: env.JWT_ACCESS_EXPIRES_IN
+      expiresIn: ms(env.JWT_ACCESS_EXPIRES_IN)
     },
     refresh: {
-      expiresIn: env.REFRESH_EXPIRES_IN
+      expiresIn: ms(env.REFRESH_EXPIRES_IN)
     }
   },
   google: {
