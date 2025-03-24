@@ -1,5 +1,5 @@
-import db from '../databases/postgres.database'
 import { eq } from 'drizzle-orm'
+import db from '../databases/postgres.database'
 import errors from '../utils/error'
 import { users, User, UserRow } from '../models'
 

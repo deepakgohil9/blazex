@@ -11,7 +11,6 @@ import config from './configs/config'
 
 // importing middlewares
 import morgan from './middlewares/morgan.middleware'
-import mongoSantize from './middlewares/mongo-santize.middleware'
 import healthcheck from './middlewares/healthcheck.handler'
 import { instrumentMiddleware, metricsHandler } from './middlewares/metrics.middleware'
 import notFound from './middlewares/not-found.handler'
@@ -34,8 +33,8 @@ app.use(cookieParser())
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
 
-// sanitize request data to prevent NoSQL injection attacks
-app.use(mongoSantize)
+// sanitize request data to prevent SQL injection attacks
+// TODO: add sanitization middleware to prevent NoSQL injection attacks
 
 // enable CORS - Cross Origin Resource Sharing
 app.use(cors({ origin: config.corsOrigin }))

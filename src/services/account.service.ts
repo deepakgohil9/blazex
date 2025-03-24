@@ -1,8 +1,8 @@
 import argon2 from 'argon2'
 import _ from 'lodash'
-import errors from '../utils/error'
 import { eq, and } from 'drizzle-orm'
 import db from '../databases/postgres.database'
+import errors from '../utils/error'
 import { accounts, Account } from '../models'
 
 /* Type definitions */
@@ -24,12 +24,6 @@ type UpdatePasswordType = { userId: string, password: string, newPassword: strin
  */
 export const setPassword = async (data: SetPasswordType): Promise<void> => {
   // Find an existing account with the given userId and 'password' as provider
-  // const account = await Account.findOne(
-  //   { userId: data.userId, provider: 'password' },
-  //   { userId: 1 },
-  //   { lean: true }
-  // )
-
   const accountsData = await db
     .select({
       userId: accounts.userId

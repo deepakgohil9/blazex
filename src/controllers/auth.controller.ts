@@ -5,18 +5,21 @@ import errors from '../utils/error'
 import remotes from '../remotes'
 import { authTypes, commonTypes } from '../validations'
 import { Locals } from '../utils/locals'
-import toObjectId from '../utils/toObjectId'
+import gravatar from '../utils/gravatar'
 import services from '../services'
 
 
 export const signUp = asyncHandler(async (req: Req<authTypes.SignUpType>, res: Res, _next: Nxt) => {
   const { email, password } = req.body
 
-  const user = await services.user.createIfNotExists({ email })
+  const user = await services.user.upsert({
+    email,
+    image: gravatar.generateUrl(email),
+  })
 
   await services.account.setPassword({
-    userId: user._id,
-    accountId: user._id.toString(),
+    userId: user.id,
+    accountId: user.id,
     password,
   })
 
@@ -37,7 +40,7 @@ export const signIn = asyncHandler(async (req: Req<authTypes.SignInType>, res: R
   }
 
   const isPasswordCorrect = await services.account.verifyPassword({
-    userId: user._id,
+    userId: user.id,
     password,
   })
 
@@ -49,7 +52,7 @@ export const signIn = asyncHandler(async (req: Req<authTypes.SignInType>, res: R
   }
 
   const data = await services.session.create({
-    userId: user._id,
+    userId: user.id,
     ipAddress: req.ip,
     userAgent: req.get('User-Agent')
   })
@@ -62,10 +65,10 @@ export const socialSignIn = asyncHandler(async (req: Req<authTypes.SocialSigninT
   const provider = req.params.provider
 
   const identity = await remotes.oidc[provider](req.body)
-  const user = await services.user.createIfNotExists({
+  const user = await services.user.upsert({
     name: identity.name,
     email: identity.email,
-    image: identity.image
+    image: identity.image || gravatar.generateUrl(identity.email)
   })
 
   if (!user.emailVerified) {
@@ -76,13 +79,13 @@ export const socialSignIn = asyncHandler(async (req: Req<authTypes.SocialSigninT
   }
 
   await services.account.linkSocial({
-    userId: user._id,
+    userId: user.id,
     accountId: identity.accountId,
     provider: provider,
   })
 
   const data = await services.session.create({
-    userId: user._id,
+    userId: user.id,
     ipAddress: req.ip,
     userAgent: req.get('User-Agent')
   })
@@ -122,7 +125,7 @@ export const listSessions = asyncHandler(async (req: Req<commonTypes.EmptyType>,
 
 export const signOut = asyncHandler(async (req: Req<authTypes.SignOutType>, res: Res<Locals>, _next: Nxt) => {
   const session = await services.session.revokeSession({
-    _id: toObjectId(req.params.sessionId),
+    id: req.params.sessionId,
     userId: res.locals.user.userId
   })
 

@@ -1,6 +1,6 @@
-import { users } from '../models'
 import { pgTable, uuid, varchar, timestamp } from 'drizzle-orm/pg-core'
 import { type InferSelectModel, type InferInsertModel } from 'drizzle-orm'
+import { users } from '../models'
 
 export const sessions = pgTable('sessions', {
   id: uuid().defaultRandom().primaryKey().notNull(),
