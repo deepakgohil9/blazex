@@ -1,8 +1,7 @@
+import { eq } from 'drizzle-orm'
+import db from '../databases/postgres.database'
 import errors from '../utils/error'
-import { User, UserDoc, IUser } from '../models'
-
-/* Type definitions */
-
+import { users, User, UserRow } from '../models'
 
 /* Service functions */
 
@@ -10,25 +9,27 @@ import { User, UserDoc, IUser } from '../models'
  * Create a new user if not exists with the provided email and return the user.
  *
  * @param data - User data to create a new user
- * @returns User document
+ * @returns User data representing the user
  */
-export const createIfNotExists = async (data: Pick<IUser, 'email' | 'name' | 'image'>): Promise<UserDoc> => {
+export const upsert = async (data: Pick<User, 'email' | 'name' | 'image'>): Promise<UserRow> => {
   // Find an existing user with the same email
-  const user = await User.findOne(
-    { email: data.email },
-    {},
-    { lean: true }
-  )
+  const existingUsers = await db
+    .select()
+    .from(users)
+    .where(eq(users.email, data.email))
+    .limit(1)
 
   // If user was found, return the user
-  if (user) {
-    return user
+  if (existingUsers[0]) {
+    return existingUsers[0]
   }
 
   // Create a new user with the email and return the user
-  const newUser = new User({ emailVerified: false, ...data })
-  await newUser.save()
-  return newUser.toObject()
+  const newUser = await db
+    .insert(users)
+    .values(data)
+    .returning()
+  return newUser[0]
 }
 
 
@@ -36,22 +37,26 @@ export const createIfNotExists = async (data: Pick<IUser, 'email' | 'name' | 'im
  * Get the user with the provided userId.
  *
  * @param userId - User id
- * @returns User document
+ * @returns User data representing the user
  * @throws {NotFoundError} - If user was not found with the provided userId
  */
-export const getUserById = async (userId: UserDoc['_id']): Promise<UserDoc> => {
+export const getUserById = async (userId: string): Promise<UserRow> => {
   // Find the user with the userId
-  const user = await User.findById(userId, {}, { lean: true })
+  const data = await db
+    .select()
+    .from(users)
+    .where(eq(users.id, userId))
+    .limit(1)
 
   // If user was not found, throw an error
-  if (!user) {
+  if (!data[0]) {
     throw new errors.NotFound({
       title: 'User not found',
       detail: 'User not found with the provided user id.'
     })
   }
 
-  return user
+  return data[0]
 }
 
 
@@ -59,22 +64,26 @@ export const getUserById = async (userId: UserDoc['_id']): Promise<UserDoc> => {
  * Get the user with the provided email.
  *
  * @param email - Email of the user
- * @returns User document
+ * @returns User data representing the user
  * @throws {NotFoundError} - If user was not found with the provided userId
  */
-export const getUserByEmail = async (email: string): Promise<UserDoc> => {
+export const getUserByEmail = async (email: string): Promise<UserRow> => {
   // Find the user with the userId
-  const user = await User.findOne({ email }, {}, { lean: true })
+  const data = await db
+    .select()
+    .from(users)
+    .where(eq(users.email, email))
+    .limit(1)
 
   // If user was not found, throw an error
-  if (!user) {
+  if (!data[0]) {
     throw new errors.NotFound({
       title: 'User not found',
       detail: 'User not found with the provided user id.'
     })
   }
 
-  return user
+  return data[0]
 }
 
 
@@ -82,25 +91,25 @@ export const getUserByEmail = async (email: string): Promise<UserDoc> => {
  *  Update the user with the provided userId and return the updated user.
  *
  * @param userId - User id
- * @param updateData - Updated user data
- * @returns Updated user document
+ * @param updateData - Data to update the user
+ * @returns User data representing the user
  * @throws {NotFoundError} - If user was not found with the provided userId
  */
-export const updateUser = async (userId: UserDoc['_id'], updateData: Omit<IUser, 'email' | 'emailVerified'>): Promise<UserDoc> => {
+export const updateUser = async (userId: string, updateData: Omit<User, 'email' | 'emailVerified'>): Promise<UserRow> => {
   // Find the user with the userId and update the user
-  const user = await User.findByIdAndUpdate(
-    userId,
-    updateData,
-    { new: true, lean: true }
-  )
+  const data = await db
+    .update(users)
+    .set(updateData)
+    .where(eq(users.id, userId))
+    .returning()
 
   // If user was not found, throw an error
-  if (!user) {
+  if (!data[0]) {
     throw new errors.NotFound({
       title: 'User not found',
       detail: 'User not found with the provided user id.'
     })
   }
 
-  return user
+  return data[0]
 }

@@ -1,33 +1,21 @@
-import mongoose from 'mongoose'
+import { pgTable, uuid, varchar, timestamp } from 'drizzle-orm/pg-core'
+import { type InferSelectModel, type InferInsertModel } from 'drizzle-orm'
+import { users } from '../models'
 
-export interface IAccount {
-  userId: mongoose.Types.ObjectId
-  accountId: string // provider's account id
-  provider: string
-  accessToken?: string
-  refreshToken?: string
-  accessTokenExpiresAt?: Date
-  refreshTokenExpiresAt?: Date
-  scope?: string
-  password?: string
-}
+export const accounts = pgTable('accounts', {
+  id: uuid().defaultRandom().primaryKey().notNull(),
+  userId: uuid().references(() => users.id).notNull(),
+  accountId: varchar().notNull(),
+  provider: varchar().notNull(),
+  accessToken: varchar(),
+  refreshToken: varchar(),
+  accessTokenExpiresAt: timestamp({ mode: 'date' }),
+  refreshTokenExpiresAt: timestamp({ mode: 'date' }),
+  scope: varchar(),
+  password: varchar(),
+  createdAt: timestamp({ mode: 'date' }).defaultNow().notNull(),
+  updatedAt: timestamp({ mode: 'date' }).$onUpdate(() => new Date()).notNull()
+})
 
-export interface AccountDoc extends IAccount {
-  _id: mongoose.Types.ObjectId
-  createdAt: Date
-  updatedAt: Date
-}
-
-const accountSchema = new mongoose.Schema<AccountDoc>({
-  userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
-  accountId: { type: String, required: true },
-  provider: { type: String, required: true },
-  accessToken: { type: String },
-  refreshToken: { type: String },
-  accessTokenExpiresAt: { type: Date },
-  refreshTokenExpiresAt: { type: Date },
-  scope: { type: String },
-  password: { type: String },
-}, { timestamps: true })
-
-export const Account = mongoose.model<AccountDoc>('Account', accountSchema)
+export type Account = Omit<InferInsertModel<typeof accounts>, 'id' | 'createdAt' | 'updatedAt'>
+export type AccountRow = InferSelectModel<typeof accounts>
