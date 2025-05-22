@@ -12,7 +12,14 @@ import services from '../services'
 export const signUp = asyncHandler(async (req: Req<authTypes.SignUpType>, res: Res, _next: Nxt) => {
   const { email, password } = req.body
 
-  const user = await services.user.createIfNotExists({ email })
+  const { user, isNew } = await services.user.createIfNotExists({ email })
+
+  if (!isNew) {
+    throw new errors.Conflict({
+      title: 'User already exists',
+      detail: 'A user with this email address already exists. Please sign in or use the password recovery option.'
+    })
+  }
 
   await services.account.setPassword({
     userId: user._id,

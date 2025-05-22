@@ -10,9 +10,9 @@ import { User, UserDoc, IUser } from '../models'
  * Create a new user if not exists with the provided email and return the user.
  *
  * @param data - User data to create a new user
- * @returns User document
+ * @returns User document and a boolean indicating if the user is new
  */
-export const createIfNotExists = async (data: Pick<IUser, 'email' | 'name' | 'image'>): Promise<UserDoc> => {
+export const createIfNotExists = async (data: Pick<IUser, 'email' | 'name' | 'image'>): Promise<{ user: UserDoc, isNew: boolean }> => {
   // Find an existing user with the same email
   const user = await User.findOne(
     { email: data.email },
@@ -22,13 +22,13 @@ export const createIfNotExists = async (data: Pick<IUser, 'email' | 'name' | 'im
 
   // If user was found, return the user
   if (user) {
-    return user
+    return { user, isNew: false }
   }
 
   // Create a new user with the email and return the user
   const newUser = new User({ emailVerified: false, ...data })
   await newUser.save()
-  return newUser.toObject()
+  return { user: newUser.toObject(), isNew: true }
 }
 
 
